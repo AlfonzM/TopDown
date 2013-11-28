@@ -9,6 +9,10 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
+/*
+ * Wizard class
+ */
+
 public class Wizard extends Player{
 
 	public Wizard(Input input, Point p) throws SlickException {
