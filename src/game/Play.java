@@ -38,9 +38,10 @@ public class Play extends BasicGameState{
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
-	public static ConfigurableEmitter emitter;
+	public static ConfigurableEmitter emitterUnit, emitterFire;
 	
 	Random r;
+	Image bg;
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		objects = new HashMap<GOType, ArrayList<GameObject>>();
@@ -56,29 +57,33 @@ public class Play extends BasicGameState{
 		objects.get(GOType.Player).add(p);
 		
 		r = new Random();
+		bg = new Image("res/bg.png");
 		
 		try{
 			Image image = new Image("res/particles/square.png");
 			File xml = new File("res/particles/unitdeath.xml");
+			File xmlFire = new File("res/particles/fire.xml");
 			
-			emitter = ParticleIO.loadEmitter(xml);
-			
+			emitterUnit = ParticleIO.loadEmitter(xml);
+			emitterFire = ParticleIO.loadEmitter(xmlFire);
+					
 			pSystem = new ParticleSystem(image, 1500);
+
+			emitterFire.setPosition(143, 55);
+			pSystem.addEmitter(emitterFire);
+			
+			ConfigurableEmitter e = emitterFire.duplicate();
+			e.setPosition(569, 55);
+			pSystem.addEmitter(e);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
-
-//		for(int i = 0; i < 20; i ++){
-//			addEnemyAI(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT));
-//		}
-//		for(int i = 0; i < 20; i ++){
-//			EMoveRandom ee = new EMoveRandom(new Point(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT)));
-//			Play.objects.get(GOType.Enemy).add(ee);
-//		}
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		bg.draw(0,0);
+		
 		for(ArrayList<GameObject> goArray : objects.values()){
 			for(GameObject go : goArray ){
 				go.render(g);
@@ -117,10 +122,9 @@ public class Play extends BasicGameState{
 			for(GameObject go : getEnemies()){
 				go.isAlive = false;
 			}
-			for(int i = 0; i < 30; i ++){
-				addEnemyAI(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT));
+			for(int i = 0; i < 10; i ++){
+				addEnemyAI(0 - i*Game.TS + 10, Game.GHEIGHT/2);
 			}
-			
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
 			for(GameObject go : getEnemies()){

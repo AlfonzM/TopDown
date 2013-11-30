@@ -47,7 +47,6 @@ public class Human extends Unit{
 				g.drawAnimation(animation, pos.getX() - 9, pos.getY());
 			}
 			else{
-				System.out.println("asd");
 				g.drawAnimation(animation, pos.getX(), pos.getY());
 			}
 		}
@@ -134,7 +133,7 @@ public class Human extends Unit{
 	
 	public void die() throws SlickException{
 		super.die();
-		ConfigurableEmitter e = Play.emitter.duplicate();
+		ConfigurableEmitter e = Play.emitterUnit.duplicate();
 		e.setPosition(pos.getX(), pos.getY());
 		Play.pSystem.addEmitter(e);
 	}
