@@ -1,6 +1,5 @@
 package game.entities;
 import game.Dir;
-import game.GOType;
 import game.Play;
 
 import org.newdawn.slick.Animation;
@@ -134,9 +133,7 @@ public class Player extends Human{
 	
 	// 1 key for attack
 	@Override	
-	public void useAttack() throws SlickException{
-		System.out.println(dir);
-		
+	public void useAttack() throws SlickException{		
 		if(canAtk){			
 			switch(dir){
 			case up: useAttack(0, -1); break;
