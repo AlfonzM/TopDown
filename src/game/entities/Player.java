@@ -1,13 +1,9 @@
 package game.entities;
-import java.awt.Color;
-import java.awt.Event;
-
 import game.Dir;
 import game.Play;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -17,56 +13,34 @@ import org.newdawn.slick.geom.Point;
  * Unit with input
  */
 public class Player extends Human{
+	
 	Input input;
 	Animation normalAtk;
-	Image healthGui;
-	boolean inv = false;
-	Boolean isDashing = inv;
-	
+
 	public Player(Input input, Point p) throws SlickException {
 		super(p);
 		
 		this.input = input;
 		
 		// move
-		speed = 3;
+		speed = 2;
 		
 		// health
 		health = 100;
 		
 		// atk
 		atkDelay = 300;
-
 	}
 	
 	@Override
 	public void render(Graphics g){
-		try {
-			healthGui = new Image("res/lifeBar.png");
-		} catch (SlickException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		super.render(g);
-		int posText = 0;
-		for(int ctr = 1; ctr<= health;ctr++){
-			healthGui.setColor(2, 2.0f,2.0f,2.0f);
-			g.drawImage(healthGui, 10+ctr, 10);
-			posText = (10+ctr)/2;
-		}
-		if(health <= 10){
-			posText = 10;
-		}
-	
-			g.drawString(" "+health, posText-10, 10);
+		g.drawString("Health: " + health, 10, 10);
 	}
 	
 	@Override
 	public void update(int delta) throws SlickException{
 		super.update(delta);
-		
-		isDashing = inv = false;
 		
 		// Movement Input handler
 		if(input.isKeyDown(Input.KEY_A)){
@@ -129,23 +103,6 @@ public class Player extends Human{
 					isAttacking = false;
 				}
 			}
-			
-			//Special Skills handler
-			if(input.isKeyPressed(Input.KEY_E)){ 
-				isDashing = inv = true;
-				if(dir == Dir.left){
-					pos.setX(pos.getX()-100); //dashLeft
-				}
-				else if(dir == Dir.right){
-					pos.setX(pos.getX()+100); //dashRight
-				}
-				else if(dir == Dir.up){
-					pos.setY(pos.getY()-100); //dashUp
-				}
-				else if(dir == Dir.down){
-					pos.setY(pos.getY()+100); //dashDown
-				}
-			}
 		}
 	}
 	
@@ -204,10 +161,9 @@ public class Player extends Human{
 	
 	@Override
 	public void takeDamage(int dmg){
-		if(inv != true){
-			super.takeDamage(dmg);
-			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
-//			Play.addGameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
-		}
+		super.takeDamage(dmg);
+		new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
+//		Play.addGameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
 	}
+
 }

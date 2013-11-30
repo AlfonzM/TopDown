@@ -5,8 +5,6 @@ import game.Play;
 import game.Vectors;
 
 import java.util.Random;
-
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
@@ -44,7 +42,7 @@ public class Enemy extends Human{
 				canMoveY = false;
 			}
 		}
-		
+
 		isCollidingPlayer();
 		
 		super.move(delta);
@@ -71,24 +69,13 @@ public class Enemy extends Human{
 		boolean atk = false;
 		
 		if(getNewXBounds().intersects(Play.p.getNewXBounds())){
-			if(Play.p.isDashing != true){
-				canMoveX = false;
-				atk = true;	
-			}
-			else{
-				this.takeDamage(Play.p.damage);
-			}
-				
+			canMoveX = false;
+			atk = true;
 		}
 		
 		if(getNewYBounds().intersects(Play.p.getNewYBounds())){
-			if(Play.p.isDashing != true){
-				canMoveY = false;
-				atk = true;
-			}
-			else{
-				this.takeDamage(Play.p.damage);
-			}
+			canMoveY = false;
+			atk = true;
 		}
 		
 		if(atk){
