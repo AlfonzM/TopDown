@@ -76,9 +76,4 @@ public class EMoveRandom extends Enemy{
 			move.y = speed;
 		}
 	}
-	
-	@Override
-	public void die() throws SlickException {
-		isAlive = false;
-	}
 }

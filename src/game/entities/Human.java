@@ -1,11 +1,13 @@
 package game.entities;
 
+import game.Play;
+
 import org.newdawn.slick.Animation;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.particles.ConfigurableEmitter;
 
 /*
  * Components: unit, attack, attack animations
@@ -44,8 +46,10 @@ public class Human extends Unit{
 			if(animation == aAtkLeft){
 				g.drawAnimation(animation, pos.getX() - 9, pos.getY());
 			}
-			else
+			else{
+				System.out.println("asd");
 				g.drawAnimation(animation, pos.getX(), pos.getY());
+			}
 		}
 		
 //		g.setColor(Color.red);
@@ -126,6 +130,13 @@ public class Human extends Unit{
 		if(canAtk){
 			attack();
 		}
+	}
+	
+	public void die() throws SlickException{
+		super.die();
+		ConfigurableEmitter e = Play.emitter.duplicate();
+		e.setPosition(pos.getX(), pos.getY());
+		Play.pSystem.addEmitter(e);
 	}
 	
 	public void initAttackAnimations() throws SlickException{

@@ -7,7 +7,7 @@ import game.entities.GameText;
 import game.entities.Player;
 import game.entities.Wizard;
 
-import java.awt.Button;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,9 +16,13 @@ import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
+import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -31,6 +35,10 @@ public class Play extends BasicGameState{
 	public static Player p;
 	public static Map<GOType, ArrayList<GameObject>> objects;
 	public static ArrayList<GameText> gameTexts;
+	
+	// Particle effects
+	public static ParticleSystem pSystem;
+	public static ConfigurableEmitter emitter;
 	
 	Random r;
 	
@@ -48,6 +56,18 @@ public class Play extends BasicGameState{
 		objects.get(GOType.Player).add(p);
 		
 		r = new Random();
+		
+		try{
+			Image image = new Image("res/particles/square.png");
+			File xml = new File("res/particles/unitdeath.xml");
+			
+			emitter = ParticleIO.loadEmitter(xml);
+			
+			pSystem = new ParticleSystem(image, 1500);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 
 //		for(int i = 0; i < 20; i ++){
 //			addEnemyAI(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT));
@@ -68,6 +88,8 @@ public class Play extends BasicGameState{
 		for(GameText gt : gameTexts){
 			gt.render(g);
 		}
+		
+		pSystem.render();
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
@@ -90,8 +112,6 @@ public class Play extends BasicGameState{
 				gt.update(delta);
 		}
 		
-		System.out.println(gameTexts.size());
-		
 		// refresh
 		if(gc.getInput().isKeyPressed(Input.KEY_F1)){
 			for(GameObject go : getEnemies()){
@@ -107,12 +127,13 @@ public class Play extends BasicGameState{
 				go.isAlive = false;
 			}
 
-			for(int i = 0; i < 3; i ++){
+			for(int i = 0; i < 30; i ++){
 				EMoveRandom ee = new EMoveRandom(new Point(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT)));
 				Play.objects.get(GOType.Enemy).add(ee);
 			}
 		}
 		
+		pSystem.update(delta);
 	}
 	
 	public void addEnemyAI(float x, float y) throws SlickException{
