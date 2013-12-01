@@ -11,7 +11,7 @@ public class EMoveToPlayer extends Enemy{
 	public EMoveToPlayer(Point p) throws SlickException {
 		super(p);
 //		speed = r.nextInt(2) + 0.5f;
-		speed = 1.5f;
+		speed = 2.8f;
 		health = 2;
 
 		updateTarget();

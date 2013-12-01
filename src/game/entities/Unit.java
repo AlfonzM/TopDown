@@ -70,7 +70,7 @@ public class Unit extends GameObject{
 	
 	public void move(int delta) throws SlickException{
 		move.normalise();
-		
+						
 		if(canMoveX)
 			pos.setX(pos.getX() + (move.x * speed));
 		if(canMoveY)

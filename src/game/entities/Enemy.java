@@ -1,13 +1,15 @@
+
 package game.entities;
 
 import game.Dir;
+import game.Game;
 import game.Play;
 import game.Vectors;
 
 import java.util.Random;
+
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Rectangle;
 
 public class Enemy extends Human{
 	
@@ -42,11 +44,22 @@ public class Enemy extends Human{
 				canMoveY = false;
 			}
 		}
-
-		isCollidingPlayer();
+		
+		// while at entrance gates
+		if(pos.getY() > 85 && pos.getY() < 185 && pos.getX() < 20){
+			canMoveY = false;
+		}
+		if((pos.getX() < 305 || pos.getX() > 417 - Game.TS) && pos.getY() < 95){
+			canMoveX = false;
+		}
+		
+//		if(!canMoveX){ // temporary solution, move down if cannot move x
+//			move.y = speed/2;
+//		}
+		
+		checkCollisionWithPlayer();
 		
 		super.move(delta);
-		
 	}
 	
 	@Override
@@ -63,19 +76,29 @@ public class Enemy extends Human{
 			dir = Dir.right;
 	}
 	
-	public void isCollidingPlayer() throws SlickException{
+	public void checkCollisionWithPlayer() throws SlickException{
 //		System.out.println(move.x + " " + move.y);
 		
 		boolean atk = false;
 		
 		if(getNewXBounds().intersects(Play.p.getNewXBounds())){
-			canMoveX = false;
-			atk = true;
+			if(Play.p.isDashing != true){
+				canMoveX = false;
+				atk = true;	
+			}
+			else{
+				this.takeDamage(Play.p.damage);
+			}
 		}
 		
 		if(getNewYBounds().intersects(Play.p.getNewYBounds())){
-			canMoveY = false;
-			atk = true;
+			if(Play.p.isDashing != true){
+				canMoveY = false;
+				atk = true;
+			}
+			else{
+				this.takeDamage(Play.p.damage);
+			}
 		}
 		
 		if(atk){

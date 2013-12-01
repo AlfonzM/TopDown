@@ -11,7 +11,7 @@ public class EMoveRandom extends Enemy{
 	
 	public EMoveRandom(Point p) throws SlickException {
 		super(p);
-		speed = 1;
+		speed = 2.2f;
 		getNewPoint();
 		
 		atkDelay = 100;
@@ -28,6 +28,18 @@ public class EMoveRandom extends Enemy{
 		}
 		else{
 			getNewPoint();
+		}
+		
+
+		// Collision with other mobs and player
+		for(GameObject go : Play.getEnemies()){
+			if(this != go && getNewXBounds().intersects(go.getBounds())){
+				getNewPoint();
+			}
+			
+			if(this != go && getNewYBounds().intersects(go.getBounds())){
+				getNewPoint();
+			}
 		}
 	}
 	

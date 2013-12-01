@@ -11,7 +11,7 @@ public class Game extends StateBasedGame{
 	 * Stress test: 1400 objects before FPS starts dropping
 	 */
 	
-	public static int GWIDTH = 720, GHEIGHT = 480;
+	public static int GWIDTH = 720, HUDHEIGHT = 60, GHEIGHT = 480 + HUDHEIGHT;
 	public static int TS = 24;
 
 	public Game() {

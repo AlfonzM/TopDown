@@ -1,9 +1,14 @@
 package game.entities;
+import java.awt.Color;
+import java.awt.Event;
+
 import game.Dir;
+import game.Game;
 import game.Play;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -13,17 +18,21 @@ import org.newdawn.slick.geom.Point;
  * Unit with input
  */
 public class Player extends Human{
-	
 	Input input;
 	Animation normalAtk;
-
+	Image healthGui;
+	boolean inv = false;
+	
+	// skill
+	Boolean isDashing = inv;
+	
 	public Player(Input input, Point p) throws SlickException {
 		super(p);
 		
 		this.input = input;
 		
 		// move
-		speed = 2;
+		speed = 3;
 		
 		// health
 		health = 100;
@@ -34,74 +43,101 @@ public class Player extends Human{
 	
 	@Override
 	public void render(Graphics g){
+		try {
+			healthGui = new Image("res/lifeBar.png");
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		super.render(g);
-		g.drawString("Health: " + health, 10, 10);
+		g.translate(0, -Game.HUDHEIGHT);
+		int posText = 0;
+		for(int ctr = 1; ctr<= health;ctr++){
+			healthGui.setColor(2, 2.0f,2.0f,2.0f);
+			g.drawImage(healthGui, 10+ctr, 10);
+			posText = (10+ctr)/2;
+		}
+		if(health <= 10){
+			posText = 10;
+		}
+	
+			g.drawString(" "+health, posText-10, 10);
+			
+		g.translate(0, Game.HUDHEIGHT);
 	}
 	
 	@Override
 	public void update(int delta) throws SlickException{
 		super.update(delta);
 		
+		isDashing = inv = false;
+		
+		// Controls handler
+		controls();
+	}
+	
+	public void controls() throws SlickException{
 		// Movement Input handler
-		if(input.isKeyDown(Input.KEY_A)){
+		if (input.isKeyDown(Input.KEY_A)) {
 			move.x = -1;
-		}
-		else if(input.isKeyDown(Input.KEY_D)){
+		} else if (input.isKeyDown(Input.KEY_D)) {
 			move.x = 1;
-		}
-		else{
+		} else {
 			move.x = 0;
 		}
-		
-		if(input.isKeyDown(Input.KEY_W)){				
+
+		if (input.isKeyDown(Input.KEY_W)) {
 			move.y = -1;
-		}
-		else if(input.isKeyDown(Input.KEY_S)){				
+		} else if (input.isKeyDown(Input.KEY_S)) {
 			move.y = 1;
-		}
-		else{
+		} else {
 			move.y = 0;
 		}
-		
-		// Attack input and attack animation handler
 
-		int attacktype = 1;
-		
-		if(attacktype == 0){
-			if(input.isKeyPressed(Input.KEY_UP) || input.isKeyPressed(Input.KEY_I)){
-				useAttack();
+		// Attack input and attack animation handler
+		int bx = 0, by = 0;
+		if (input.isKeyDown(Input.KEY_I)) {
+			isAttacking = true;
+			by = -1;
+			dir = Dir.up;
+		}
+		else if (input.isKeyDown(Input.KEY_K)) {
+			isAttacking = true;
+			by = 1;
+			dir = Dir.down;
+		}
+
+		if (input.isKeyDown(Input.KEY_J)) {
+			isAttacking = true;
+			bx = -1;
+			dir = Dir.left;
+		}
+		else if (input.isKeyDown(Input.KEY_L)) {
+			isAttacking = true;
+			bx = 1;
+			dir = Dir.right;
+		}
+
+		if (isAttacking) {
+			useAttack(bx, by);
+
+			if (bx == 0 && by == 0) {
+				isAttacking = false;
 			}
 		}
-		else{
-			int bx = 0, by = 0;
-			if(input.isKeyDown(Input.KEY_UP)){
-				isAttacking = true;
-				by = -1;
-				dir = Dir.up;
-			}
-			else if(input.isKeyDown(Input.KEY_DOWN)){
-				isAttacking = true;
-				by = 1;
-				dir = Dir.down;
-			}
-			
-			if(input.isKeyDown(Input.KEY_LEFT)){
-				isAttacking = true;
-				bx = -1;
-				dir = Dir.left;
-			}
-			else if(input.isKeyDown(Input.KEY_RIGHT)){
-				isAttacking = true;
-				bx = 1;
-				dir = Dir.right;
-			}
-			
-			if(isAttacking){
-				useAttack(bx, by);
 
-				if(bx == 0 && by == 0){
-					isAttacking = false;
-				}
+		// Special Skills handler
+		if (input.isKeyPressed(Input.KEY_U)) {
+			isDashing = inv = true;
+			if (dir == Dir.left) {
+				pos.setX(pos.getX() - 100); // dashLeft
+			} else if (dir == Dir.right) {
+				pos.setX(pos.getX() + 100); // dashRight
+			} else if (dir == Dir.up) {
+				pos.setY(pos.getY() - 100); // dashUp
+			} else if (dir == Dir.down) {
+				pos.setY(pos.getY() + 100); // dashDown
 			}
 		}
 	}
@@ -119,6 +155,16 @@ public class Player extends Human{
 			if(canMoveY && getNewYBounds().intersects(go.getBounds())){
 				canMoveY = false;
 			}
+		}
+
+		float newX = pos.getX() + (move.x * speed);
+		if(canMoveX && newX < 20 || newX > Game.GWIDTH - 20 - Game.TS){
+			canMoveX = false;
+		}
+		
+		float newY = pos.getY() + (move.y * speed);
+		if(newY < 95 || newY > Game.GHEIGHT - Game.HUDHEIGHT - 40){
+			canMoveY = false;
 		}
 		
 		super.move(delta);
@@ -161,9 +207,10 @@ public class Player extends Human{
 	
 	@Override
 	public void takeDamage(int dmg){
-		super.takeDamage(dmg);
-		new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
-//		Play.addGameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
+		if(inv != true){
+			super.takeDamage(dmg);
+			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
+//			Play.addGameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
+		}
 	}
-
 }

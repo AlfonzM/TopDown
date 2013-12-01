@@ -27,7 +27,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class Play extends BasicGameState{
-	// Values
+	// Constant Values
 	static int TILESIZE = 20;
 	static int goCount = 0;
 	
@@ -35,6 +35,8 @@ public class Play extends BasicGameState{
 	public static Player p;
 	public static Map<GOType, ArrayList<GameObject>> objects;
 	public static ArrayList<GameText> gameTexts;
+	
+	public int wave, timeTillNextWave, restTime;
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
@@ -44,21 +46,28 @@ public class Play extends BasicGameState{
 	Image bg;
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		r = new Random();
+		
+		wave = 0;
+		restTime = 5000;
+		timeTillNextWave = restTime;
+		
+		bg = new Image("res/bg.png");
+		
+		// Initialize arrays
 		objects = new HashMap<GOType, ArrayList<GameObject>>();
 		gameTexts = new ArrayList<GameText>();
+
+		// Player
+		p = new Wizard(gc.getInput(), new Point(Game.GWIDTH/2, Game.GHEIGHT/2));
 		
 		objects.put(GOType.Player, new ArrayList<GameObject>());
 		objects.put(GOType.Enemy, new ArrayList<GameObject>());
 		objects.put(GOType.Bullet, new ArrayList<GameObject>());
-//		objects.put(GOType.GameText, new ArrayList<GameObject>());
-		
-		p = new Wizard(gc.getInput(), new Point(Game.GWIDTH/2, Game.GHEIGHT/2));
 		
 		objects.get(GOType.Player).add(p);
 		
-		r = new Random();
-		bg = new Image("res/bg.png");
-		
+		// Prepare particle system
 		try{
 			Image image = new Image("res/particles/square.png");
 			File xml = new File("res/particles/unitdeath.xml");
@@ -82,6 +91,10 @@ public class Play extends BasicGameState{
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		// HUD
+		renderHUD(g);
+		
+		g.translate(0, Game.HUDHEIGHT);
 		bg.draw(0,0);
 		
 		for(ArrayList<GameObject> goArray : objects.values()){
@@ -95,9 +108,26 @@ public class Play extends BasicGameState{
 		}
 		
 		pSystem.render();
+		
+		// display xy coords
+		int x = gc.getInput().getMouseX();
+		int y = gc.getInput().getMouseY();
+		g.drawString(x+ " " + y, x, y-Game.HUDHEIGHT-20);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		if(getEnemies().isEmpty()){
+			timeTillNextWave -= delta;
+			if(timeTillNextWave < 0){
+				timeTillNextWave = restTime;
+				addAINorth(2);
+				wave++;
+			}
+		}
+		
+		System.out.println(timeTillNextWave);
+		
+		// Update all game objects
 		for(ArrayList<GameObject> goArray : objects.values()){
 			for (Iterator<GameObject> iterator = goArray.iterator(); iterator.hasNext(); ) {
 				GameObject go = iterator.next();
@@ -108,7 +138,7 @@ public class Play extends BasicGameState{
 			}
 		}
 		
-		// game texts
+		// Update all game texts
 		for (Iterator<GameText> iterator = gameTexts.iterator(); iterator.hasNext(); ) {
 			GameText gt = iterator.next();
 			if (!gt.isAlive) {
@@ -117,14 +147,15 @@ public class Play extends BasicGameState{
 				gt.update(delta);
 		}
 		
-		// refresh
+		// Select enemy mode (for testing only)
 		if(gc.getInput().isKeyPressed(Input.KEY_F1)){
 			for(GameObject go : getEnemies()){
 				go.isAlive = false;
 			}
-			for(int i = 0; i < 10; i ++){
-				addEnemyAI(0 - i*Game.TS + 10, Game.GHEIGHT/2);
-			}
+			
+			addAIWest(3);
+			addAIEast(3);
+			addAINorth(3);
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
 			for(GameObject go : getEnemies()){
@@ -137,12 +168,39 @@ public class Play extends BasicGameState{
 			}
 		}
 		
+		// Update particle system
 		pSystem.update(delta);
+	}
+	
+	public void renderHUD(Graphics g){
+		g.drawString("Wave: " + wave, 150, 5);
+		
+		if(getEnemies().isEmpty())
+			g.drawString("Next wave in " + (timeTillNextWave/1000) + "." + (timeTillNextWave%1000/100) + (timeTillNextWave%100/10), 150, 25);
 	}
 	
 	public void addEnemyAI(float x, float y) throws SlickException{
 		EMoveToPlayer ee = new EMoveToPlayer(new Point(x, y));
 		objects.get(GOType.Enemy).add(ee);
+		
+	}
+	
+	public void addAIWest(int count) throws SlickException{
+		for(int i = 0; i < count; i ++){
+			addEnemyAI(0 - i*Game.TS + 10, r.nextInt(85) + 185);
+		}
+	}
+	
+	public void addAIEast(int count) throws SlickException{
+		for(int i = 0; i < count; i ++){
+			addEnemyAI(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
+		}
+	}
+	
+	public void addAINorth(int count) throws SlickException{
+		for(int i = 0 ; i < count ; i++){
+			addEnemyAI(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10 - Game.HUDHEIGHT);
+		}
 	}
 	
 	public static void addGameText(String value, Point p){
