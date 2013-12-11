@@ -4,6 +4,7 @@ import game.entities.EMoveRandom;
 import game.entities.EMoveToPlayer;
 import game.entities.GameObject;
 import game.entities.GameText;
+import game.entities.Pickable;
 import game.entities.Player;
 import game.entities.Wizard;
 
@@ -64,8 +65,10 @@ public class Play extends BasicGameState{
 		objects.put(GOType.Player, new ArrayList<GameObject>());
 		objects.put(GOType.Enemy, new ArrayList<GameObject>());
 		objects.put(GOType.Bullet, new ArrayList<GameObject>());
+		objects.put(GOType.Pickable, new ArrayList<GameObject>());
 		
 		objects.get(GOType.Player).add(p);
+		objects.get(GOType.Pickable).add(new Pickable(new Point(300, 300), PickableType.exp));
 		
 		// Prepare particle system
 		try{
@@ -93,7 +96,6 @@ public class Play extends BasicGameState{
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		// HUD
 		renderHUD(g);
-		
 		g.translate(0, Game.HUDHEIGHT);
 		bg.draw(0,0);
 		
@@ -103,10 +105,12 @@ public class Play extends BasicGameState{
 			}
 		}
 		
+		// Game Texts
 		for(GameText gt : gameTexts){
 			gt.render(g);
 		}
 		
+		// Particle system
 		pSystem.render();
 		
 		// display xy coords
@@ -116,16 +120,18 @@ public class Play extends BasicGameState{
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		// check next wave
 		if(getEnemies().isEmpty()){
 			timeTillNextWave -= delta;
 			if(timeTillNextWave < 0){
+				// next wave
 				timeTillNextWave = restTime;
-				addAINorth(2);
+				addAINorth(3);
+				addRandomWest(5);
+				addRandomEast(5);
 				wave++;
 			}
 		}
-		
-		System.out.println(timeTillNextWave);
 		
 		// Update all game objects
 		for(ArrayList<GameObject> goArray : objects.values()){
@@ -154,8 +160,10 @@ public class Play extends BasicGameState{
 			}
 			
 			addAIWest(3);
-			addAIEast(3);
-			addAINorth(3);
+			
+//			addRandomWest(5);
+//			addRandomNorth(5);
+//			addRandomEast(5);
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
 			for(GameObject go : getEnemies()){
@@ -185,6 +193,11 @@ public class Play extends BasicGameState{
 		
 	}
 	
+	public void addEnemyRandom(float x, float y) throws SlickException{
+		EMoveRandom ee = new EMoveRandom(new Point(x, y));
+		Play.objects.get(GOType.Enemy).add(ee);
+	}
+	
 	public void addAIWest(int count) throws SlickException{
 		for(int i = 0; i < count; i ++){
 			addEnemyAI(0 - i*Game.TS + 10, r.nextInt(85) + 185);
@@ -203,13 +216,34 @@ public class Play extends BasicGameState{
 		}
 	}
 	
-	public static void addGameText(String value, Point p){
-//		GameText t = new GameText(p);
-//		gameTexts.add(t);
+	public void addRandomWest(int count) throws SlickException{
+		for(int i = 0 ; i < count ; i++){
+			addEnemyRandom(0 - i*Game.TS + 10, r.nextInt(85) + 185);
+		}
+	}
+	
+	public void addRandomEast(int count) throws SlickException{
+		for(int i = 0 ; i < count ; i++){
+			addEnemyRandom(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
+		}
+	}
+	
+	public void addRandomNorth(int count) throws SlickException{
+		for(int i = 0 ; i < count ; i++){
+			addEnemyRandom(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10 - Game.HUDHEIGHT);
+		}
 	}
 	
 	public static ArrayList<GameObject> getEnemies(){
 		return objects.get(GOType.Enemy);
+	}
+	
+	public static boolean isInsideWallsX(float x){
+		return x < 20 || x > Game.GWIDTH - 20 - Game.TS;
+	}
+	
+	public static boolean isInsideWallsY(float y){
+		return y < 95 || y > Game.GHEIGHT - Game.HUDHEIGHT - 40;
 	}
 	
 	public static int getObjectCount(){

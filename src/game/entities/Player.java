@@ -1,8 +1,7 @@
 package game.entities;
-import java.awt.Color;
-import java.awt.Event;
 
 import game.Dir;
+import game.GOType;
 import game.Game;
 import game.Play;
 
@@ -23,8 +22,18 @@ public class Player extends Human{
 	Image healthGui;
 	boolean inv = false;
 	
+	// stats attributes
+	
+	
+	// level
+	int level, experience, expToNextLevel;
+	
+	
 	// skill
 	Boolean isDashing = inv;
+	float dashStartPoint, dashRange;  
+	
+	int defaultSpeed;
 	
 	public Player(Input input, Point p) throws SlickException {
 		super(p);
@@ -32,17 +41,30 @@ public class Player extends Human{
 		this.input = input;
 		
 		// move
-		speed = 3;
+		defaultSpeed = 3;
+		speed = defaultSpeed;
 		
 		// health
 		health = 100;
 		
 		// atk
 		atkDelay = 300;
+		
+		// stats attributes
+		
+		// level
+		level = 1;
+		experience = 0;
+		expToNextLevel = 100;
+		
+		// skill
+		dashStartPoint = 0;
+		dashRange = 100;
 	}
 	
 	@Override
 	public void render(Graphics g){
+		// health
 		try {
 			healthGui = new Image("res/lifeBar.png");
 		} catch (SlickException e) {
@@ -62,8 +84,11 @@ public class Player extends Human{
 			posText = 10;
 		}
 	
-			g.drawString(" "+health, posText-10, 10);
-			
+		g.drawString(" "+health, posText-10, 10);
+		
+		g.drawString("Level: " + level, 10, 35);
+		g.drawString("Exp: " + experience + "/" + expToNextLevel, 10, 55);
+		
 		g.translate(0, Game.HUDHEIGHT);
 	}
 	
@@ -71,7 +96,13 @@ public class Player extends Human{
 	public void update(int delta) throws SlickException{
 		super.update(delta);
 		
-		isDashing = inv = false;
+		// Pickables collision
+		for(GameObject p : Play.objects.get(GOType.Pickable)){
+			Pickable pickable = (Pickable) p;
+			if(getBounds().intersects(pickable.getBounds())){
+				pickable.pickedUp();
+			}
+		}
 		
 		// Controls handler
 		controls();
@@ -83,7 +114,7 @@ public class Player extends Human{
 			move.x = -1;
 		} else if (input.isKeyDown(Input.KEY_D)) {
 			move.x = 1;
-		} else {
+		} else if(!isDashing) {
 			move.x = 0;
 		}
 
@@ -126,20 +157,61 @@ public class Player extends Human{
 				isAttacking = false;
 			}
 		}
-
-		// Special Skills handler
-		if (input.isKeyPressed(Input.KEY_U)) {
+		
+		// Dash
+		if(!isDashing && input.isKeyPressed(Input.KEY_U)){
 			isDashing = inv = true;
-			if (dir == Dir.left) {
-				pos.setX(pos.getX() - 100); // dashLeft
-			} else if (dir == Dir.right) {
-				pos.setX(pos.getX() + 100); // dashRight
-			} else if (dir == Dir.up) {
-				pos.setY(pos.getY() - 100); // dashUp
-			} else if (dir == Dir.down) {
-				pos.setY(pos.getY() + 100); // dashDown
+			dashStartPoint = 0;
+			
+			switch(dir){
+			case left:
+				move.x = -1;
+				break;
+				
+			case right:
+				move.x = 1;
+				break;
+				
+//			case up:
+//				move.y = 1;
+//				break;				
+//				
+//			case down:
+//				move.y = -1;
+//				break;
 			}
 		}
+		
+		if(isDashing){
+			speed = 20;
+			
+			if(Math.abs(dashStartPoint) > dashRange){
+				isDashing = inv = false;
+				speed = defaultSpeed;
+				move.x = 0;
+				move.y = 0;
+			}
+			else{
+				dashStartPoint += move.x * speed;
+			}
+		}
+		
+		System.out.println(dashStartPoint + "  " + dashRange);
+//
+//		// Special Skills handler
+//		if (input.isKeyPressed(Input.KEY_U)) {
+//			isDashing = inv = true;
+//			if (dir == Dir.left) {
+//				move.x = 20;
+////				pos.setX(pos.getX() - 100); // dashLeft
+//			} else if (dir == Dir.right) {
+//				pos.setX(pos.getX() + 100); // dashRight
+//			} else if (dir == Dir.up) {
+//				pos.setY(pos.getY() - 100); // dashUp
+//			} else if (dir == Dir.down) {
+//				pos.setY(pos.getY() + 100); // dashDown
+//			}
+//		}
 	}
 	
 	@Override
@@ -158,16 +230,28 @@ public class Player extends Human{
 		}
 
 		float newX = pos.getX() + (move.x * speed);
-		if(canMoveX && newX < 20 || newX > Game.GWIDTH - 20 - Game.TS){
+		if(canMoveX && Play.isInsideWallsX(newX)){
 			canMoveX = false;
 		}
 		
 		float newY = pos.getY() + (move.y * speed);
-		if(newY < 95 || newY > Game.GHEIGHT - Game.HUDHEIGHT - 40){
+		if(canMoveY && Play.isInsideWallsY(newY)){
 			canMoveY = false;
 		}
 		
 		super.move(delta);
+	}
+	
+	public void addExp(int exp){
+		experience += exp;
+		
+		// level up
+		if(experience >= expToNextLevel){
+			level++;
+			experience -= expToNextLevel;
+			expToNextLevel += 50;
+			new GameText("Level up!", pos, 50);
+		}
 	}
 	
 	// arrow keys
@@ -210,7 +294,14 @@ public class Player extends Human{
 		if(inv != true){
 			super.takeDamage(dmg);
 			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
-//			Play.addGameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
 		}
+	}
+	
+	public void addHP(int hp){
+		health += hp;
+	}
+	
+	public void addMP(int mp){
+		health += mp;
 	}
 }

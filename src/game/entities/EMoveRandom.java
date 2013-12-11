@@ -55,14 +55,15 @@ public class EMoveRandom extends Enemy{
 	
 	public void attack() throws SlickException{
 		super.attack();
+		moveAwayFromPlayer();
 	}
 	
 	public void getNewPoint(){
 		currentFrames = 0;
 		maxFrames = r.nextInt(100) + 50;
 		
-		int newX = r.nextInt(Game.GWIDTH);
-		int newY = r.nextInt(Game.GHEIGHT);
+		float newX = r.nextInt(Game.GWIDTH - 20 - (int) getBounds().getWidth()) + 20;
+		float newY = r.nextInt(Game.GHEIGHT - Game.HUDHEIGHT - 40 - 95) + 95;
 		
 		recalculateVector(newX, newY);
 		

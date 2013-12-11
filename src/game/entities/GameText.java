@@ -24,6 +24,15 @@ public class GameText extends GameObject{
 		
 		Play.gameTexts.add(this);
 	}
+	
+	public GameText(String val, Point p, int range){
+		super(p);
+		value = val;
+		
+		targetY = pos.getY() - range;
+		
+		Play.gameTexts.add(this);
+	}
 
 	@Override
 	public void update(int delta) throws SlickException {

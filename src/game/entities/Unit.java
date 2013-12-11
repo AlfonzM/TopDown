@@ -140,10 +140,10 @@ public class Unit extends GameObject{
 	}
 	
 	public Rectangle getNewXBounds(){
-		return new Rectangle(pos.getX() + move.x, pos.getY(), bounds.getWidth(), bounds.getHeight());
+		return new Rectangle(pos.getX() + move.x * 2, pos.getY(), bounds.getWidth(), bounds.getHeight());
 	}
 	
 	public Rectangle getNewYBounds(){
-		return new Rectangle(pos.getX(), pos.getY() + move.y, bounds.getWidth(), bounds.getHeight());
+		return new Rectangle(pos.getX(), pos.getY() + move.y * 2, bounds.getWidth(), bounds.getHeight());
 	}
 }

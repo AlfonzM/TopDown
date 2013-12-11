@@ -8,11 +8,14 @@ import game.Vectors;
 
 import java.util.Random;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
 public class Enemy extends Human{
-	
+	//
+	int exp;
+		
 	Random r;
 	Point targetPoint;
 
@@ -27,6 +30,14 @@ public class Enemy extends Human{
 		
 		initMoveAnimations("enemy1");
 		initAttackAnimations("enemy1");
+		
+		exp = 10;
+	}
+	
+	@Override
+	public void render(Graphics g){
+		super.render(g);
+//		g.fill(getBounds());
 	}
 	
 	@Override
@@ -53,8 +64,12 @@ public class Enemy extends Human{
 			canMoveX = false;
 		}
 		
-//		if(!canMoveX){ // temporary solution, move down if cannot move x
-//			move.y = speed/2;
+//		if(!canMoveX && canMoveY){ // temporary solution, move down if cannot move x
+//			move.y -= move.x;
+//		}
+//		
+//		if(!canMoveY && canMoveX){
+//			move.x += move.y;
 //		}
 		
 		checkCollisionWithPlayer();
@@ -113,6 +128,13 @@ public class Enemy extends Human{
 	public void attack() throws SlickException{
 		super.attack();
 		Play.p.takeDamage(damage);
+	}
+	
+	@Override
+	public void die() throws SlickException {
+		super.die();
+		
+		Play.p.addExp(exp);
 	}
 	
 	public void recalculateVector(float newX, float newY){
