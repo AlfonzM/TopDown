@@ -11,7 +11,8 @@ public class EMoveRandom extends Enemy{
 	
 	public EMoveRandom(Point p) throws SlickException {
 		super(p);
-		speed = 2.2f;
+		defaultSpeed = 2.2f;
+		speed = defaultSpeed;
 		getNewPoint();
 		
 		atkDelay = 100;
@@ -62,8 +63,8 @@ public class EMoveRandom extends Enemy{
 		currentFrames = 0;
 		maxFrames = r.nextInt(100) + 50;
 		
-		float newX = r.nextInt(Game.GWIDTH - 20 - (int) getBounds().getWidth()) + 20;
-		float newY = r.nextInt(Game.GHEIGHT - Game.HUDHEIGHT - 40 - 95) + 95;
+		float newX = r.nextInt(Game.MWIDTH - 20 - (int) getBounds().getWidth()) + 20;
+		float newY = r.nextInt(Game.MHEIGHT - 40 - 95) + 95;
 		
 		recalculateVector(newX, newY);
 		

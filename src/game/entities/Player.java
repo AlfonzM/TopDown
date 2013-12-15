@@ -1,17 +1,24 @@
 package game.entities;
 
 import game.Dir;
+import game.Fonts;
 import game.GOType;
 import game.Game;
+import game.HUD;
 import game.Play;
+import game.Play.GameState;
+import game.entities.skills.Blank;
+import game.entities.skills.Haste;
+import game.entities.skills.Skill;
+import game.entities.skills.WindWalk;
 
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
-
 
 /*
  * Unit with input
@@ -19,21 +26,27 @@ import org.newdawn.slick.geom.Point;
 public class Player extends Human{
 	Input input;
 	Animation normalAtk;
-	Image healthGui;
-	boolean inv = false;
+	public boolean invulnerable = false;
+	public boolean invisible = false;
 	
-	// stats attributes
-	
-	
-	// level
-	int level, experience, expToNextLevel;
-	
+	// stats
+	public int level;
+	public int experience;
+	public int expToNextLevel;
+	public int gold;
+	public int goldToAdd, goldToSubtract;
 	
 	// skill
-	Boolean isDashing = inv;
-	float dashStartPoint, dashRange;  
+	public Skill[] skills;
+	public boolean[] canUseSkill;
+	boolean isDashing = invulnerable;
+	float dashStartPoint, dashRange;
 	
-	int defaultSpeed;
+	// render points
+	public static float renderX, renderY;
+	
+	// health
+	public int maxHealth;
 	
 	public Player(Input input, Point p) throws SlickException {
 		super(p);
@@ -45,51 +58,89 @@ public class Player extends Human{
 		speed = defaultSpeed;
 		
 		// health
-		health = 100;
+		maxHealth = 100;
+		health = maxHealth;
 		
 		// atk
 		atkDelay = 300;
 		
 		// stats attributes
+		gold = 250;
 		
 		// level
 		level = 1;
 		experience = 0;
 		expToNextLevel = 100;
 		
-		// skill
+		// skills
+		skills = new Skill[4];
+		canUseSkill = new boolean[4];
+		for(int i = 0 ; i < skills.length; i++){
+			skills[i] = new Blank();
+			canUseSkill[i] = true;
+		}
 		dashStartPoint = 0;
 		dashRange = 100;
 	}
 	
 	@Override
 	public void render(Graphics g){
-		// health
-		try {
-			healthGui = new Image("res/lifeBar.png");
-		} catch (SlickException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//		super.render(g);
+		updateAnimation();
+		
+		renderX = Game.GWIDTH/2;
+		renderY = Game.GHEIGHT/2;
+		
+		// RENDER X
+		if(pos.getX() - Game.GWIDTH/2 <= 0){
+			// manual
+			renderX = pos.getX();
+		}
+		else if(pos.getX() + Game.GWIDTH/2 > Game.MWIDTH){
+			// manual
+			renderX = Play.offsetX + pos.getX();
+		}
+		else{
+			// center
+			Play.offsetX = Game.GWIDTH/2 - pos.getX();
+			renderX = Game.GWIDTH/2;
 		}
 		
-		super.render(g);
-		g.translate(0, -Game.HUDHEIGHT);
-		int posText = 0;
-		for(int ctr = 1; ctr<= health;ctr++){
-			healthGui.setColor(2, 2.0f,2.0f,2.0f);
-			g.drawImage(healthGui, 10+ctr, 10);
-			posText = (10+ctr)/2;
+		// RENDERY
+		if(pos.getY() - Game.GHEIGHT/2 <= 0){
+			// manual
+			renderY = pos.getY();
 		}
-		if(health <= 10){
-			posText = 10;
+		else if(pos.getY() + Game.GHEIGHT/2 > Game.MHEIGHT){
+			// manual
+			renderY = Play.offsetY + pos.getY();
 		}
-	
-		g.drawString(" "+health, posText-10, 10);
+		else{
+			// center
+			Play.offsetY = Game.GHEIGHT/2 - pos.getY();
+			renderY = Game.GHEIGHT/2;
+		}
 		
-		g.drawString("Level: " + level, 10, 35);
-		g.drawString("Exp: " + experience + "/" + expToNextLevel, 10, 55);
+		if(invisible){
+			Image i = animation.getCurrentFrame().copy();
+			i.setAlpha(0.5f);
+			g.drawImage(i, renderX, renderY);
+		}
+		else if(animation != null){
+			if(animation == aAtkLeft){
+				g.drawAnimation(animation, renderX, renderY);
+			}
+			else{
+				g.drawAnimation(animation, renderX, renderY);
+			}
+		}
 		
-		g.translate(0, Game.HUDHEIGHT);
+		// Render skills
+		for(int i = 0 ; i < skills.length ; i++){
+			skills[i].render(g);
+		}
+		
+		g.setColor(Color.white);
 	}
 	
 	@Override
@@ -104,8 +155,37 @@ public class Player extends Human{
 			}
 		}
 		
+		// Update skills
+		for(int i = 0 ; i < skills.length; i++){
+			skills[i].update(delta);
+		}
+		
 		// Controls handler
 		controls();
+		
+		// Update gold
+		int inc = 2;
+		if(goldToAdd > 0){
+			if(goldToAdd > inc){
+				goldToAdd -= inc;
+				gold += inc;
+			}
+			else{
+				gold += goldToAdd;
+				goldToAdd = 0;
+			}
+		}
+		
+		if(goldToSubtract > 0){
+			if(goldToSubtract > inc){
+				goldToSubtract -= inc;
+				gold -= inc;
+			}
+			else{
+				gold -= goldToSubtract;
+				goldToSubtract = 0;
+			}
+		}
 	}
 	
 	public void controls() throws SlickException{
@@ -158,20 +238,39 @@ public class Player extends Human{
 			}
 		}
 		
+		// Skills handler
+		if(Play.gameState != GameState.rest){
+			if(Play.p.input.isKeyPressed(Input.KEY_Q)){
+				useSkill(0);
+			}
+			if(Play.p.input.isKeyPressed(Input.KEY_E)){
+				useSkill(1);
+			}
+			if(Play.p.input.isKeyPressed(Input.KEY_U)){
+				useSkill(2);
+			}
+			if(Play.p.input.isKeyPressed(Input.KEY_O)){
+				useSkill(3);
+			}			
+		}
+		
 		// Dash
-		if(!isDashing && input.isKeyPressed(Input.KEY_U)){
-			isDashing = inv = true;
-			dashStartPoint = 0;
-			
-			switch(dir){
-			case left:
-				move.x = -1;
-				break;
-				
-			case right:
-				move.x = 1;
-				break;
-				
+//		if(!isDashing && input.isKeyPressed(Input.KEY_U)){
+//			isDashing = invulnerable = true;
+//			dashStartPoint = 0;
+//			
+//			switch(dir){
+//			case left:
+//				move.x = -1;
+//				break;
+//				
+//			case right:
+//				move.x = 1;
+//				break;
+//				
+//			default:
+//				break;
+//				
 //			case up:
 //				move.y = 1;
 //				break;				
@@ -179,14 +278,14 @@ public class Player extends Human{
 //			case down:
 //				move.y = -1;
 //				break;
-			}
-		}
+//			}
+//		}
 		
 		if(isDashing){
 			speed = 20;
 			
 			if(Math.abs(dashStartPoint) > dashRange){
-				isDashing = inv = false;
+				isDashing = invulnerable = false;
 				speed = defaultSpeed;
 				move.x = 0;
 				move.y = 0;
@@ -195,8 +294,6 @@ public class Player extends Human{
 				dashStartPoint += move.x * speed;
 			}
 		}
-		
-		System.out.println(dashStartPoint + "  " + dashRange);
 //
 //		// Special Skills handler
 //		if (input.isKeyPressed(Input.KEY_U)) {
@@ -214,6 +311,26 @@ public class Player extends Human{
 //		}
 	}
 	
+	private void useSkill(int i) throws SlickException {
+		if(canUseSkill[i] && skills[i].name != ""){
+			skills[i].useSkill();
+			canUseSkill[i] = false;
+			
+			switch(skills[i].name){
+			case "HASTE":
+				HUD.addTimer(Haste.duration, i);
+				break;
+				
+			case "SHADOW WALK":
+				HUD.addTimer(WindWalk.duration, i);
+				break;
+				
+			default:
+				break;
+			}
+		}
+	}
+
 	@Override
 	public void move(int delta) throws SlickException{
 		canMoveX = true;
@@ -242,15 +359,15 @@ public class Player extends Human{
 		super.move(delta);
 	}
 	
-	public void addExp(int exp){
-		experience += exp;
+	public void addExp(float f){
+		experience += f;
 		
 		// level up
 		if(experience >= expToNextLevel){
 			level++;
 			experience -= expToNextLevel;
 			expToNextLevel += 50;
-			new GameText("Level up!", pos, 50);
+			new GameText("LEVEL UP!!!", pos, 150, Color.green, Fonts.font24);
 		}
 	}
 	
@@ -291,7 +408,7 @@ public class Player extends Human{
 	
 	@Override
 	public void takeDamage(int dmg){
-		if(inv != true){
+		if(invulnerable != true){
 			super.takeDamage(dmg);
 			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
 		}

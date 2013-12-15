@@ -1,6 +1,7 @@
 package game.entities;
 
 import game.Play;
+import game.Sounds;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
@@ -13,21 +14,23 @@ import org.newdawn.slick.particles.ConfigurableEmitter;
  * Components: unit, attack, attack animations
  */
 
-public class Human extends Unit{
-	
+public class Human extends Unit{	
 	// attacking component
 	enum AttackType { melee, ranged };
 	int damage;
 	int atkDelay, atkCounter;
 	boolean canAtk, isAttacking, isAnimatingAtk;
 	
-	Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
+	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
 	
 	// 4 directions animation
 	Animation aUp, aDown, aLeft, aRight;
 	
+	public float defaultSpeed;
+	
 	public Human(Point p) throws SlickException{
 		super(p);
+		new Sounds();
 		
 		// Attack
 		damage = 1;
@@ -136,6 +139,8 @@ public class Human extends Unit{
 		ConfigurableEmitter e = Play.emitterUnit.duplicate();
 		e.setPosition(pos.getX(), pos.getY());
 		Play.pSystem.addEmitter(e);
+		
+//		Sounds.die.play();
 	}
 	
 	public void initAttackAnimations() throws SlickException{

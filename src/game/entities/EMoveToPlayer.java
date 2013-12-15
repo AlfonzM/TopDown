@@ -10,8 +10,8 @@ public class EMoveToPlayer extends Enemy{
 
 	public EMoveToPlayer(Point p) throws SlickException {
 		super(p);
-//		speed = r.nextInt(2) + 0.5f;
-		speed = 2.4f;
+		defaultSpeed = 2.4f;
+		speed = defaultSpeed;
 		health = 2;
 
 		updateTarget();
@@ -35,7 +35,9 @@ public class EMoveToPlayer extends Enemy{
 	@Override
 	public void move(int delta) throws SlickException{
 		// ai to follow player
-		super.move(delta);
+		if(!Play.p.invisible){
+			super.move(delta);
+		}
 		updateTarget();
 	}
 	

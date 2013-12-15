@@ -10,7 +10,7 @@ import org.newdawn.slick.geom.Rectangle;
  */
 
 public abstract class GameObject {
-	Point pos;
+	public Point pos;
 	Image sprite;
 	public boolean isAlive;
 	

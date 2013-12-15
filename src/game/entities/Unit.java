@@ -19,10 +19,10 @@ public class Unit extends GameObject{
 	Vector2f move;
 	boolean canMoveX, canMoveY;
 	public float speed;
-	Dir dir;
+	public Dir dir;
 	
 	// health component
-	int health;
+	public int health;
 	
 	// Animation
 	Animation animation;

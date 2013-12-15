@@ -3,7 +3,6 @@ package game.entities;
 import game.GOType;
 import game.Play;
 
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;

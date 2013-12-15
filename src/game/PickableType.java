@@ -1,3 +1,3 @@
 package game;
 
-public enum PickableType { healthPotion, manaPotion, exp, hpUp, mpUp }
+public enum PickableType { healthPotion, manaPotion, exp, hpUp, mpUp, gold }

@@ -4,6 +4,7 @@ package game.entities;
 import game.Dir;
 import game.Game;
 import game.Play;
+import game.StatusEffect;
 import game.Vectors;
 
 import java.util.Random;
@@ -13,11 +14,13 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
 public class Enemy extends Human{
-	//
 	int exp;
 		
 	Random r;
 	Point targetPoint;
+	
+	boolean isStunned;
+	int stunDuration;
 
 	public Enemy(Point p) throws SlickException {
 		super(p);
@@ -26,14 +29,24 @@ public class Enemy extends Human{
 		
 		speed = 1;
 		
-		atkDelay = 2000;
+		atkDelay = 500;
 		
 		initMoveAnimations("enemy1");
 		initAttackAnimations("enemy1");
 		
 		exp = 10;
+		
+		// stat effects
+		isStunned = false;
 	}
 	
+	@Override
+	public void update(int delta) throws SlickException{
+		super.update(delta);
+		
+		updateStatusEffects(delta);
+	}
+
 	@Override
 	public void render(Graphics g){
 		super.render(g);
@@ -57,12 +70,12 @@ public class Enemy extends Human{
 		}
 		
 		// while at entrance gates
-		if(pos.getY() > 85 && pos.getY() < 185 && pos.getX() < 20){
-			canMoveY = false;
-		}
-		if((pos.getX() < 305 || pos.getX() > 417 - Game.TS) && pos.getY() < 95){
-			canMoveX = false;
-		}
+//		if(pos.getY() > 85 && pos.getY() < 185 && pos.getX() < 20){
+//			canMoveY = false;
+//		}
+//		if((pos.getX() < 305 || pos.getX() > 417 - Game.TS) && pos.getY() < 95){
+//			canMoveX = false;
+//		}
 		
 //		if(!canMoveX && canMoveY){ // temporary solution, move down if cannot move x
 //			move.y -= move.x;
@@ -134,12 +147,34 @@ public class Enemy extends Human{
 	public void die() throws SlickException {
 		super.die();
 		
-		Play.p.addExp(exp);
+		Random r = new Random();
+		if(r.nextBoolean())
+			Play.addExpDrop(pos, exp);
+		else{
+			Play.addGoldDrop(pos, 10);
+		}
 	}
 	
 	public void recalculateVector(float newX, float newY){
 		float rad = Vectors.getRad(pos.getX(), newX, pos.getY(), newY);
 		move.x = (float) Math.sin(rad) * speed;
 		move.y = (float) Math.cos(rad) * speed;
+	}
+	
+	private void updateStatusEffects(int delta) {
+		if(isStunned){
+			stunDuration -= delta;
+			
+			if(stunDuration < 0){
+				isStunned = false;
+				speed = defaultSpeed;
+			}
+		}
+	}
+
+	public void stun(int duration) {
+		isStunned = true;
+		speed = 0;
+		stunDuration = duration;
 	}
 }

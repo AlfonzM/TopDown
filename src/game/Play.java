@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import org.newdawn.slick.AngelCodeFont;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -31,44 +33,60 @@ public class Play extends BasicGameState{
 	// Constant Values
 	static int TILESIZE = 20;
 	static int goCount = 0;
+	public enum GameState { battle, rest }
 	
 	// GAME OBJECTS
 	public static Player p;
 	public static Map<GOType, ArrayList<GameObject>> objects;
 	public static ArrayList<GameText> gameTexts;
+	public static Shop shop;
 	
-	public int wave, timeTillNextWave, restTime;
+	// Wave counter and timers
+	public static int wave;
+	public static int timeTillNextWave;
+	public static int restTime;
+	
+	// Render translates
+	public static float offsetX, offsetY;
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
 	public static ConfigurableEmitter emitterUnit, emitterFire;
 	
+	// HUD
+	static Image healthGui;
+	
 	Random r;
 	Image bg;
+	public static GameState gameState;
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		new Fonts();
+		new ScreenShake();
+		new HUD();
+		
 		r = new Random();
 		
 		wave = 0;
-		restTime = 5000;
+		restTime = 20000;
 		timeTillNextWave = restTime;
 		
-		bg = new Image("res/bg.png");
+		bg = new Image("res/bg3.png");
+		gameState = GameState.rest;
 		
 		// Initialize arrays
 		objects = new HashMap<GOType, ArrayList<GameObject>>();
 		gameTexts = new ArrayList<GameText>();
 
 		// Player
-		p = new Wizard(gc.getInput(), new Point(Game.GWIDTH/2, Game.GHEIGHT/2));
-		
+		p = new Wizard(gc.getInput(), new Point(Game.MWIDTH/2, Game.MHEIGHT/2));
+
+		objects.put(GOType.Pickable, new ArrayList<GameObject>());
 		objects.put(GOType.Player, new ArrayList<GameObject>());
 		objects.put(GOType.Enemy, new ArrayList<GameObject>());
 		objects.put(GOType.Bullet, new ArrayList<GameObject>());
-		objects.put(GOType.Pickable, new ArrayList<GameObject>());
 		
 		objects.get(GOType.Player).add(p);
-		objects.get(GOType.Pickable).add(new Pickable(new Point(300, 300), PickableType.exp));
 		
 		// Prepare particle system
 		try{
@@ -91,17 +109,37 @@ public class Play extends BasicGameState{
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		// first shop
+		shop = new Shop();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		// HUD
-		renderHUD(g);
-		g.translate(0, Game.HUDHEIGHT);
-		bg.draw(0,0);
+		g.translate(ScreenShake.offsetX, ScreenShake.offsetY);
+		g.setFont(Fonts.font16);
+		
+		bg.setAlpha(0.9f);
+		bg.draw(offsetX, offsetY);
+		
+		if(gameState == GameState.rest){
+			g.translate(offsetX, offsetY);
+			
+			if(Shop.isOpen)
+				shop.render(g);
+			g.translate(-offsetX, -offsetY);
+		}
+		
+		
+		// ===============================
+		// offset
+		// ===============================
+		g.translate(offsetX, offsetY);
 		
 		for(ArrayList<GameObject> goArray : objects.values()){
 			for(GameObject go : goArray ){
-				go.render(g);
+				if(!go.getClass().equals(p.getClass())){
+					go.render(g);
+				}
 			}
 		}
 		
@@ -112,24 +150,64 @@ public class Play extends BasicGameState{
 		
 		// Particle system
 		pSystem.render();
+
+		// ===============================
+		// offset back to normal for HUD
+		// ===============================
+		
+		g.translate(-offsetX, -offsetY);
+		p.render(g);
+		
+		// HUD
+		HUD.render(g);
 		
 		// display xy coords
-		int x = gc.getInput().getMouseX();
-		int y = gc.getInput().getMouseY();
-		g.drawString(x+ " " + y, x, y-Game.HUDHEIGHT-20);
+//		int x = gc.getInput().getMouseX();
+//		int y = gc.getInput().getMouseY();
+//		g.drawString(x+ " " + y, x, y-20);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		// check next wave
-		if(getEnemies().isEmpty()){
+		HUD.update(delta);
+		
+		// skip countdown
+		if(gc.getInput().isKeyPressed(Input.KEY_ENTER)){
+			timeTillNextWave = 0;
+		}
+		
+		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
+			ScreenShake.screenShake(1000);
+		}
+		
+		// check state
+		if(gameState == GameState.battle && getEnemies().isEmpty()){
+			gameState = GameState.rest;
+			
+			for(int i = 0 ; i < p.skills.length ; i++){
+				p.canUseSkill[i] = true;
+			}
+			
+			// initialize shop
+			shop = new Shop();
+		}
+		
+		// REST STATE
+		if(gameState == GameState.rest){
+			
+			// countdown
 			timeTillNextWave -= delta;
+			
 			if(timeTillNextWave < 0){
-				// next wave
+				// commence next wave
 				timeTillNextWave = restTime;
-				addAINorth(3);
-				addRandomWest(5);
-				addRandomEast(5);
+				addAINorth(1);
+//				addAIWest(5);
+//				addAIEast(5);
+//				addRandomWest(15);
+//				addRandomEast(15);
 				wave++;
+				
+				gameState = GameState.battle;
 			}
 		}
 		
@@ -154,43 +232,50 @@ public class Play extends BasicGameState{
 		}
 		
 		// Select enemy mode (for testing only)
-		if(gc.getInput().isKeyPressed(Input.KEY_F1)){
-			for(GameObject go : getEnemies()){
-				go.isAlive = false;
-			}
-			
-			addAIWest(3);
-			
+//		if(gc.getInput().isKeyPressed(Input.KEY_F1)){
+//			for(GameObject go : getEnemies()){
+//				go.isAlive = false;
+//			}
+//			
+//			addAIWest(3);
+//			
 //			addRandomWest(5);
 //			addRandomNorth(5);
 //			addRandomEast(5);
-		}
-		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
-			for(GameObject go : getEnemies()){
-				go.isAlive = false;
-			}
-
-			for(int i = 0; i < 30; i ++){
-				EMoveRandom ee = new EMoveRandom(new Point(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT)));
-				Play.objects.get(GOType.Enemy).add(ee);
-			}
-		}
+//		}
+//		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
+//			for(GameObject go : getEnemies()){
+//				go.isAlive = false;
+//			}
+//
+//			for(int i = 0; i < 30; i ++){
+//				EMoveRandom ee = new EMoveRandom(new Point(r.nextInt(Game.GWIDTH), r.nextInt(Game.GHEIGHT)));
+//				Play.objects.get(GOType.Enemy).add(ee);
+//			}
+//		}
 		
 		// Update particle system
 		pSystem.update(delta);
+		
+		// Update screenshaker
+		ScreenShake.update(delta);
 	}
 	
-	public void renderHUD(Graphics g){
-		g.drawString("Wave: " + wave, 150, 5);
-		
-		if(getEnemies().isEmpty())
-			g.drawString("Next wave in " + (timeTillNextWave/1000) + "." + (timeTillNextWave%1000/100) + (timeTillNextWave%100/10), 150, 25);
+	
+	
+	// UTILITY FUNCTIONS
+	
+	public static void addExpDrop(Point pos, int value) throws SlickException{
+		objects.get(GOType.Pickable).add(new Pickable(pos, value, PickableType.exp));
+	}
+	
+	public static void addGoldDrop(Point pos, int value) throws SlickException{
+		objects.get(GOType.Pickable).add(new Pickable(pos, value, PickableType.gold));
 	}
 	
 	public void addEnemyAI(float x, float y) throws SlickException{
 		EMoveToPlayer ee = new EMoveToPlayer(new Point(x, y));
 		objects.get(GOType.Enemy).add(ee);
-		
 	}
 	
 	public void addEnemyRandom(float x, float y) throws SlickException{
@@ -212,7 +297,7 @@ public class Play extends BasicGameState{
 	
 	public void addAINorth(int count) throws SlickException{
 		for(int i = 0 ; i < count ; i++){
-			addEnemyAI(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10 - Game.HUDHEIGHT);
+			addEnemyAI(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
 		}
 	}
 	
@@ -230,7 +315,7 @@ public class Play extends BasicGameState{
 	
 	public void addRandomNorth(int count) throws SlickException{
 		for(int i = 0 ; i < count ; i++){
-			addEnemyRandom(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10 - Game.HUDHEIGHT);
+			addEnemyRandom(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
 		}
 	}
 	
@@ -239,11 +324,15 @@ public class Play extends BasicGameState{
 	}
 	
 	public static boolean isInsideWallsX(float x){
-		return x < 20 || x > Game.GWIDTH - 20 - Game.TS;
+//		return x < 20 || x > Game.MWIDTH - 20 - Game.TS;
+		
+		return x < 0 || x > Game.MWIDTH - Game.TS;
 	}
 	
 	public static boolean isInsideWallsY(float y){
-		return y < 95 || y > Game.GHEIGHT - Game.HUDHEIGHT - 40;
+//		return y < 95 || y > Game.MHEIGHT - 40;
+		
+		return y < 0 || y > Game.MHEIGHT - Game.TS;
 	}
 	
 	public static int getObjectCount(){
@@ -258,7 +347,11 @@ public class Play extends BasicGameState{
 		return objectCount;
 	}
 
+	public static int centerText(String string, AngelCodeFont font){
+		return (Game.GWIDTH - font.getWidth(string))/2;
+	}
+
 	public int getID() {		
-		return 0;
+		return 1;
 	}
 }

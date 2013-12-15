@@ -5,35 +5,37 @@ import game.Play;
 
 import java.util.ArrayList;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Rectangle;
 
 public class Bullet extends Unit{
 
 //	Dir direction;
 	ArrayList<GameObject> targets;
 	
-	int range = 50, rangeCount = 0, damage = 1;
+	public int range = 50;
+
+	int rangeCount = 0;
+
+	public int damage = 1;
 	
 	int bWidth = 5,
 	    bHeight = 5;
 	
 	Image sprite;
 	
-	public Bullet(Point p, int vx, int vy, GOType type) throws SlickException{
+	public Bullet(Point p, float vx, float vy, GOType userType) throws SlickException{
 		super(p);
 		speed = 5;
 		
 		bounds.setHeight(bHeight);
 		bounds.setWidth(bWidth);
 		
-		if(type == GOType.Player){
+		if(userType == GOType.Player){
 			targets = Play.getEnemies();
 		}
-		else if(type == GOType.Enemy){
+		else if(userType == GOType.Enemy){
 			targets = Play.objects.get(GOType.Player);
 		}
 		

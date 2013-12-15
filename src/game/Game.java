@@ -11,7 +11,8 @@ public class Game extends StateBasedGame{
 	 * Stress test: 1400 objects before FPS starts dropping
 	 */
 	
-	public static int GWIDTH = 720, HUDHEIGHT = 80, GHEIGHT = 480 + HUDHEIGHT;
+	public static int GWIDTH = 720, GHEIGHT = 480;
+	public static int MWIDTH = 960, MHEIGHT = 960;
 	public static int TS = 24;
 
 	public Game() {
@@ -20,10 +21,10 @@ public class Game extends StateBasedGame{
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
+		this.addState(new Menu());
 		this.addState(new Play());
 		this.enterState(0);
 	}
-
 	
 	public static void main(String args[]) throws SlickException{
 		AppGameContainer appgc = new AppGameContainer(new Game());
