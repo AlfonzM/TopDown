@@ -130,7 +130,6 @@ public class Play extends BasicGameState{
 		enemiesKilled = 0;
 		totalGold = 0;
 		totalExp = 0;
-
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -336,8 +335,6 @@ public class Play extends BasicGameState{
 		// Update screenshaker
 		ScreenShake.update(delta);
 	}
-	
-	
 	
 	// UTILITY FUNCTIONS
 	

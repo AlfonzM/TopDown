@@ -145,8 +145,8 @@ public class HUD {
 //		g.drawString("Level: " + Play.p.level, 10, 35);
 //		g.drawString("Exp: " + Play.p.experience + "/" + Play.p.expToNextLevel, 10, 55);
 		
-		g.setColor(Color.yellow);
-		Fonts.font8.drawString(Game.GWIDTH - 10 - Fonts.font8.getWidth("GOLD"), 10, "GOLD", Color.yellow);
+		g.setColor(MyColors.yellow);
+		Fonts.font8.drawString(Game.GWIDTH - 10 - Fonts.font8.getWidth("GOLD"), 10, "GOLD", MyColors.yellow);
 		g.drawString("" + Play.p.gold, Game.GWIDTH - 10 - Fonts.font16.getWidth(""+Play.p.gold), 20);		
 		g.setColor(Color.white);
 
@@ -240,7 +240,7 @@ public class HUD {
 				
 				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave - 1);
 				t = s;
-				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.green);
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.green);
 				
 				y += 40;
 				t = "ENEMIES KILLED";
@@ -248,7 +248,7 @@ public class HUD {
 
 				s = NumberFormat.getNumberInstance(Locale.US).format(Play.enemiesKilled);
 				t = s;
-				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.red);
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.red);
 				
 				y += 40;
 				t = "TOTAL GOLD COLLECTED";
@@ -256,7 +256,7 @@ public class HUD {
 
 				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalGold);
 				t = s;
-				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.yellow);
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.yellow);
 				
 				y += 40;
 				t = "TOTAL EXPERIENCE EARNED";
@@ -264,7 +264,7 @@ public class HUD {
 				
 				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalExp);
 				t = s;
-				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.cyan);
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.cyan);
 			}
 		}
 	}

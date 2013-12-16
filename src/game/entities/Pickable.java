@@ -1,10 +1,10 @@
 package game.entities;
 
+import game.MyColors;
 import game.PickableType;
 import game.Play;
 import game.Sounds;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -63,7 +63,7 @@ public class Pickable extends GameObject{
 			else
 				text = "+" + value;
 
-			new GameText(text, pos, Color.cyan);
+			new GameText(text, pos, MyColors.cyan);
 			Play.p.addExp(value);
 			Play.totalExp += value;
 			
@@ -80,7 +80,7 @@ public class Pickable extends GameObject{
 			else
 				text2 = "+" + value;
 
-			new GameText(text2, pos, Color.yellow);
+			new GameText(text2, pos, MyColors.yellow);
 			Play.p.goldToAdd += value;
 			Play.totalGold += value;
 			

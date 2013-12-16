@@ -2,6 +2,7 @@ package game.entities;
 
 import game.Fonts;
 import game.Game;
+import game.MyColors;
 import game.Play;
 import game.Shop;
 import game.entities.skills.Skill;
@@ -40,7 +41,7 @@ public class ShopItem{
 //			g.drawString(s.name, Play.centerText(s.name, Fonts.font16), Game.GHEIGHT/2 + 100);
 			g.drawString(s.desc, Play.centerText(s.desc, Fonts.font16), Game.GHEIGHT/2 + 120);
 			
-			Color c = (Play.p.gold >= s.cost)? Color.yellow : Color.red;
+			Color c = (Play.p.gold >= s.cost)? MyColors.yellow : MyColors.red;
 			Fonts.font16.drawString(Play.centerText("Cost: "+s.cost, Fonts.font16), Game.GHEIGHT/2 + 160, "Cost: "+s.cost, c);
 			
 			g.translate(Play.offsetX, Play.offsetY);

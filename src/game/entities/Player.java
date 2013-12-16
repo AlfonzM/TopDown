@@ -249,7 +249,6 @@ public class Player extends Human{
 				useSkill(0);
 			}
 			if(Play.p.input.isKeyPressed(Input.KEY_E)){
-				System.out.println("use e");
 				useSkill(1);
 			}
 			if(Play.p.input.isKeyPressed(Input.KEY_U)){
