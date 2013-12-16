@@ -14,7 +14,7 @@ public abstract class GameObject {
 	Image sprite;
 	public boolean isAlive;
 	
-	Rectangle bounds;	
+	public Rectangle bounds;	
 	
 	public GameObject(Point p){
 		pos = new Point(p.getX(), p.getY());

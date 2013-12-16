@@ -1,5 +1,6 @@
 package game.entities;
 import game.Dir;
+import game.Sounds;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
@@ -16,8 +17,9 @@ import org.newdawn.slick.geom.Vector2f;
 public class Unit extends GameObject{
 	
 	// movement component
-	Vector2f move;
-	boolean canMoveX, canMoveY;
+	protected Vector2f move;
+	protected boolean canMoveX;
+	protected boolean canMoveY;
 	public float speed;
 	public Dir dir;
 	
@@ -25,7 +27,7 @@ public class Unit extends GameObject{
 	public int health;
 	
 	// Animation
-	Animation animation;
+	public Animation animation;
 	
 	public Unit(Point p) throws SlickException{		
 		// Position & isAlive at super
@@ -87,6 +89,8 @@ public class Unit extends GameObject{
 				e.printStackTrace();
 			}
 		}
+		
+		Sounds.hit.play();
 	}
 	
 	// update dir

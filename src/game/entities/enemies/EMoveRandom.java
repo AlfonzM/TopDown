@@ -1,6 +1,7 @@
-package game.entities;
+package game.entities.enemies;
 import game.Game;
 import game.Play;
+import game.entities.GameObject;
 
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -15,7 +16,7 @@ public class EMoveRandom extends Enemy{
 		speed = defaultSpeed;
 		getNewPoint();
 		
-		atkDelay = 100;
+		atkDelay = 1000;
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package game.entities;
 
 import game.PickableType;
 import game.Play;
+import game.Sounds;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -14,7 +15,7 @@ public class Pickable extends GameObject{
 	PickableType type;
 	int value;
 	
-	int lifespan = 5000, life;
+	int lifespan = 7000, life;
 	
 	public static float expMod = 1;
 	public static float goldMod = 1;
@@ -64,6 +65,9 @@ public class Pickable extends GameObject{
 
 			new GameText(text, pos, Color.cyan);
 			Play.p.addExp(value);
+			Play.totalExp += value;
+			
+			Sounds.exp.play();
 			break;
 			
 		case gold:
@@ -78,6 +82,9 @@ public class Pickable extends GameObject{
 
 			new GameText(text2, pos, Color.yellow);
 			Play.p.goldToAdd += value;
+			Play.totalGold += value;
+			
+			Sounds.coin.play();
 			break;
 			
 		default:

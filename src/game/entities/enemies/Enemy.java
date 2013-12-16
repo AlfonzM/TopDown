@@ -1,14 +1,18 @@
 
-package game.entities;
+package game.entities.enemies;
 
 import game.Dir;
-import game.Game;
+import game.Fonts;
 import game.Play;
-import game.StatusEffect;
+import game.Sounds;
 import game.Vectors;
+import game.entities.GameObject;
+import game.entities.GameText;
+import game.entities.Human;
 
 import java.util.Random;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -43,6 +47,10 @@ public class Enemy extends Human{
 	@Override
 	public void update(int delta) throws SlickException{
 		super.update(delta);
+		
+		if(isStunned){
+			atkCounter -= delta;
+		}
 		
 		updateStatusEffects(delta);
 	}
@@ -110,23 +118,13 @@ public class Enemy extends Human{
 		boolean atk = false;
 		
 		if(getNewXBounds().intersects(Play.p.getNewXBounds())){
-			if(Play.p.isDashing != true){
-				canMoveX = false;
-				atk = true;	
-			}
-			else{
-				this.takeDamage(Play.p.damage);
-			}
+			canMoveX = false;
+			atk = true;	
 		}
 		
 		if(getNewYBounds().intersects(Play.p.getNewYBounds())){
-			if(Play.p.isDashing != true){
-				canMoveY = false;
-				atk = true;
-			}
-			else{
-				this.takeDamage(Play.p.damage);
-			}
+			canMoveY = false;
+			atk = true;
 		}
 		
 		if(atk){
@@ -139,8 +137,12 @@ public class Enemy extends Human{
 	}
 	
 	public void attack() throws SlickException{
-		super.attack();
-		Play.p.takeDamage(damage);
+		if(!isStunned){
+			super.attack();
+			
+			if(atkType == AttackType.melee)
+				Play.p.takeDamage(damage);
+		}
 	}
 	
 	@Override
@@ -153,6 +155,9 @@ public class Enemy extends Human{
 		else{
 			Play.addGoldDrop(pos, 10);
 		}
+		
+		Play.enemiesKilled++;
+		Sounds.die.play();
 	}
 	
 	public void recalculateVector(float newX, float newY){
@@ -176,5 +181,7 @@ public class Enemy extends Human{
 		isStunned = true;
 		speed = 0;
 		stunDuration = duration;
+		
+		new GameText("Stun", pos, 80, Color.orange, Fonts.font16);
 	}
 }

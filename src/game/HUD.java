@@ -1,11 +1,19 @@
 package game;
 
+import game.Play.GameState;
 import game.entities.skills.Skill;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.state.StateBasedGame;
 
 public class HUD {
 	static Image offSkill, onSkill;
@@ -15,6 +23,12 @@ public class HUD {
 	
 	static boolean[] timer;
 	static int[] dur;
+	
+	// game over screen
+	static float alpha;
+	static float c1, c1Time, cNum, cNumTime;
+	
+	static int waveDisplay, goldDisplay, expDisplay;
 	
 	public HUD() throws SlickException{
 		Image spritesheet = new Image("res/HUD.png");
@@ -33,18 +47,25 @@ public class HUD {
 		
 		timer = new boolean[4];
 		dur = new int[4];
+		
+		alpha = 0;
+		cNumTime = 500;
+		c1Time = 2000;
 	}
 
 	public static void render(Graphics g){
 		g.translate(-ScreenShake.offsetX, -ScreenShake.offsetY);
 		
-		if(Play.getEnemies().isEmpty()){
+		if(Play.p.isAlive && Play.getEnemies().isEmpty()){
 			String t = "Next wave in";
-			g.drawString(t, Play.centerText(t, Fonts.font16), 25);
+			g.drawString(t, Play.centerText(t, Fonts.font16), 10);
 			
-			t= (Play.timeTillNextWave/1000) + "";
-//				 + "." + (timeTillNextWave%1000/100) + (timeTillNextWave%100/10);
-			Fonts.font24.drawString(Play.centerText(t, Fonts.font24), 50, t);
+			t= (Play.timeTillNextWave/1000) + "." + (Play.timeTillNextWave%1000/100);
+//			+ (timeTillNextWave%100/10);
+			Fonts.font24.drawString(Play.centerText(t, Fonts.font24), 27, t);
+			
+			t = "(ENTER TO SKIP)";
+			Fonts.font8.drawString(Play.centerText(t, Fonts.font8), 55, t);
 		}
 
 		// HUD
@@ -68,6 +89,15 @@ public class HUD {
 		
 		// level
 		g.drawImage(levelBox, 10, 10);
+		
+		if(Play.p.isAlive){
+			g.setColor(MyColors.green);
+			g.drawString("Wave: " + Play.wave, 10, 50);
+			g.setColor(Color.white);
+			if(Play.gameState == GameState.battle && Play.getEnemies().size() <= 5){
+				Fonts.font8.drawString(10, 70, "ENEMIES REMAINING: " + Play.getEnemies().size());
+			}			
+		}
 		
 		float x = 10 + levelBox.getWidth();
 		
@@ -191,15 +221,76 @@ public class HUD {
 				Fonts.font16.drawString(xpos2 + onSkill.getWidth()/2 - Fonts.font16.getWidth(d)/2, ypos - 20, d);
 			}
 		}
+		
+		// GAME OVER
+		if(!Play.p.isAlive){
+			g.setColor(new Color(0, 0, 0, alpha));
+			g.fill(new Rectangle(0, 0, Game.GWIDTH,Game.GHEIGHT));
+
+			g.setColor(Color.white);
+			
+			if(c1 >= c1Time){
+				int y = 80;
+				String t = "YOU DIED.";
+				Fonts.font24.drawString(Play.centerText(t, Fonts.font24), y, t);
+				float x4 = 30;
+				y += 60;
+				t = "WAVES DEFENDED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+				
+				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave - 1);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.green);
+				
+				y += 40;
+				t = "ENEMIES KILLED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.enemiesKilled);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.red);
+				
+				y += 40;
+				t = "TOTAL GOLD COLLECTED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalGold);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.yellow);
+				
+				y += 40;
+				t = "TOTAL EXPERIENCE EARNED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+				
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalExp);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, Color.cyan);
+			}
+		}
 	}
 	
-	public static void update(int delta){
+	public static void update(int delta, GameContainer gc, StateBasedGame sbg) throws SlickException{
 		for(int i = 0; i < 4; i++){
 			if(timer[i]){
 				dur[i] -= delta;
 				
 				if(dur[i] <= 0)
 					timer[i] = false;
+			}
+		}
+		
+		if(!Play.p.isAlive){
+			if(alpha < 0.6f){
+				alpha += 0.004f;
+			}
+			else if(c1 < c1Time){
+				c1 += delta;
+			}
+			else{
+				if(gc.getInput().isKeyPressed(Input.KEY_ENTER)){
+					sbg.enterState(0);
+					Play.initPlay(gc);					
+				}
 			}
 		}
 	}

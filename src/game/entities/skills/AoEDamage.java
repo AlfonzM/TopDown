@@ -2,9 +2,10 @@ package game.entities.skills;
 
 import game.Play;
 import game.ScreenShake;
-import game.entities.Enemy;
+import game.Sounds;
 import game.entities.GameObject;
 import game.entities.Player;
+import game.entities.enemies.Enemy;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -12,7 +13,7 @@ import org.newdawn.slick.geom.Rectangle;
 
 public class AoEDamage extends Skill{
 	Rectangle aoe;
-	int size = 300;
+	int size = 200;
 	
 	boolean on;
 	int duration = 5000;
@@ -20,21 +21,24 @@ public class AoEDamage extends Skill{
 	public AoEDamage() throws SlickException {
 		super();
 		name = "SPLIT EARTH";
-		desc = "Damages all enemies around you.";
-		cost = 750;
+		desc = "Damages all enemies in a small area around you.";
+		cost = 650;
 				
 		aoe = new Rectangle(Player.renderX - size, Player.renderY - size, size, size);
 	}
 
 	@Override
 	public void useSkill() throws SlickException {
-		ScreenShake.screenShake(1000);
+		ScreenShake.shake();
 		for(GameObject go : Play.getEnemies()){
 			Enemy e = (Enemy) go;
 			if(getBounds().contains(e.pos)){
 				e.die();
 			}
 		}
+		
+		Sounds.stomp.play();
+		Sounds.stomp2.play();
 	}
 
 	@Override

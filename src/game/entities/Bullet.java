@@ -1,10 +1,13 @@
 package game.entities;
 
 import game.GOType;
+import game.Game;
 import game.Play;
+import game.Vectors;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -34,15 +37,30 @@ public class Bullet extends Unit{
 		
 		if(userType == GOType.Player){
 			targets = Play.getEnemies();
+			move.x = vx;
+			move.y = vy;
+			
+			sprite = new Image("res/wizard/normalatk.png").getSubImage((int) ++vx *Game.TS, (int) ++vy * Game.TS, Game.TS, Game.TS);
 		}
 		else if(userType == GOType.Enemy){
 			targets = Play.objects.get(GOType.Player);
+			sprite = new Image("res/wizard/normalatk2.png").getSubImage(1 * Game.TS, 0, Game.TS, Game.TS);
+			recalculateVector(Play.p.pos.getX(), Play.p.pos.getY());
+			
+			float xDistance = (float) Play.p.pos.getX() - p.getX();
+			float yDistance = (float) Play.p.pos.getY() - p.getY();
+			
+			float angleToTurn = (float) Math.toDegrees(Math.atan2(-yDistance, -xDistance));
+			
+			sprite.rotate(angleToTurn - 90);
 		}
 		
 		health = 1;
-		
-		move.x = vx;
-		move.y = vy;
+	}
+	
+	@Override
+	public void render(Graphics g){
+		g.drawImage(sprite, pos.getX(), pos.getY());
 	}
 	
 	@Override
@@ -62,5 +80,13 @@ public class Bullet extends Unit{
 				takeDamage(1);
 			}
 		}
+	}
+
+	public float recalculateVector(float newX, float newY){
+		float rad = Vectors.getRad(pos.getX(), newX, pos.getY(), newY);
+		move.x = (float) Math.sin(rad) * speed;
+		move.y = (float) Math.cos(rad) * speed;
+		
+		return rad;
 	}
 }

@@ -16,10 +16,11 @@ import org.newdawn.slick.particles.ConfigurableEmitter;
 
 public class Human extends Unit{	
 	// attacking component
-	enum AttackType { melee, ranged };
-	int damage;
-	int atkDelay, atkCounter;
-	boolean canAtk, isAttacking, isAnimatingAtk;
+	public enum AttackType { melee, ranged };
+	public int damage;
+	public int atkDelay;
+	public int atkCounter;
+	public boolean canAtk, isAttacking, isAnimatingAtk;
 	
 	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
 	
@@ -27,6 +28,8 @@ public class Human extends Unit{
 	Animation aUp, aDown, aLeft, aRight;
 	
 	public float defaultSpeed;
+	
+	protected AttackType atkType;
 	
 	public Human(Point p) throws SlickException{
 		super(p);
@@ -39,6 +42,7 @@ public class Human extends Unit{
 		canAtk = true;
 		isAttacking = false;
 		isAnimatingAtk = false;
+		atkType = AttackType.melee;
 	}
 	
 	@Override
@@ -129,7 +133,7 @@ public class Human extends Unit{
 	}
 	
 	public void useAttack() throws SlickException{
-		if(canAtk){
+		if(canAtk && Play.p.isAlive){
 			attack();
 		}
 	}

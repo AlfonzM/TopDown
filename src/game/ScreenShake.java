@@ -23,7 +23,7 @@ public class ScreenShake {
 		goingUp = true;
 	}
 	
-	public static void screenShake(int dur){
+	public static void shake(){
 		mode = 1;
 		
 		offsetX = 0;
@@ -32,7 +32,6 @@ public class ScreenShake {
 		goingUp = true;
 		
 		on = true;
-		duration = dur;
 		
 		offset = defaultOffset;
 	}
@@ -40,8 +39,6 @@ public class ScreenShake {
 	public static void update(int delta){
 		if(on){
 			screenShake();
-			
-			duration -= delta;
 
 			offset -= 0.7f;
 			System.out.println(offset);

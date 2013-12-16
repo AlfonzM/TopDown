@@ -5,9 +5,14 @@ import game.Fonts;
 import game.GOType;
 import game.Game;
 import game.HUD;
+import game.MyColors;
 import game.Play;
 import game.Play.GameState;
+import game.ScreenShake;
+import game.Sounds;
 import game.entities.skills.Blank;
+import game.entities.skills.ExpUp;
+import game.entities.skills.GoldUp;
 import game.entities.skills.Haste;
 import game.entities.skills.Skill;
 import game.entities.skills.WindWalk;
@@ -39,8 +44,8 @@ public class Player extends Human{
 	// skill
 	public Skill[] skills;
 	public boolean[] canUseSkill;
-	boolean isDashing = invulnerable;
-	float dashStartPoint, dashRange;
+	public boolean isDashing = invulnerable;
+	public float dashStartPoint, dashRange;
 	
 	// render points
 	public static float renderX, renderY;
@@ -65,7 +70,7 @@ public class Player extends Human{
 		atkDelay = 300;
 		
 		// stats attributes
-		gold = 250;
+		gold = 500;
 		
 		// level
 		level = 1;
@@ -244,6 +249,7 @@ public class Player extends Human{
 				useSkill(0);
 			}
 			if(Play.p.input.isKeyPressed(Input.KEY_E)){
+				System.out.println("use e");
 				useSkill(1);
 			}
 			if(Play.p.input.isKeyPressed(Input.KEY_U)){
@@ -325,6 +331,14 @@ public class Player extends Human{
 				HUD.addTimer(WindWalk.duration, i);
 				break;
 				
+			case "INCREASED XP":
+				HUD.addTimer(ExpUp.duration, i);
+				break;
+				
+			case "GREED IS GOOD":
+				HUD.addTimer(GoldUp.duration, i);
+				break;
+				
 			default:
 				break;
 			}
@@ -367,7 +381,9 @@ public class Player extends Human{
 			level++;
 			experience -= expToNextLevel;
 			expToNextLevel += 50;
-			new GameText("LEVEL UP!!!", pos, 150, Color.green, Fonts.font24);
+			new GameText("LEVEL UP!!!", pos, 150, MyColors.green, Fonts.font24);
+			
+			Sounds.levelup.play();
 		}
 	}
 	
@@ -399,6 +415,7 @@ public class Player extends Human{
 	// attack based on faced direction
 	public void attack() throws SlickException{
 		super.attack();
+		Sounds.shoot2.play();
 	}
 	
 	// attack based on arrow keys
@@ -410,15 +427,18 @@ public class Player extends Human{
 	public void takeDamage(int dmg){
 		if(invulnerable != true){
 			super.takeDamage(dmg);
-			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30));
+			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30), Color.red);
 		}
 	}
 	
-	public void addHP(int hp){
-		health += hp;
-	}
-	
-	public void addMP(int mp){
-		health += mp;
+	@Override
+	public void die() throws SlickException{
+		super.die();
+		health = 0;
+		ScreenShake.shake();
+		bounds.setWidth(0);
+		bounds.setHeight(0);
+		
+		Sounds.stomp.play();
 	}
 }

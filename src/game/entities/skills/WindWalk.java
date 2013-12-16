@@ -1,7 +1,7 @@
 package game.entities.skills;
 
 import game.Play;
-import game.entities.Player;
+import game.Sounds;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -18,7 +18,6 @@ public class WindWalk extends Skill{
 		desc = "Grants invisibility and increased\nmove speed for 7 seconds.";
 		cost = 150;
 		
-		
 		on = false;
 	}
 
@@ -30,12 +29,13 @@ public class WindWalk extends Skill{
 		Play.p.invulnerable = true;
 		Play.p.invisible = true;
 		Play.p.speed *= 1.5f;
+		
+		Sounds.windwalk.play();
 	}
 
 	@Override
 	public void update(int delta) {
 		if(on){
-			System.out.println(duration);
 			duration -= delta;
 			
 			if(duration < 0){

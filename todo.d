@@ -2,6 +2,7 @@ TODO
 
 Coding
 * Core
+- death
 - implement sprite animations
 - enemies per wave
 - different enemy types/behavior
@@ -15,7 +16,6 @@ Coding
 	- gold up (yellow particles)
 - drop pickup color fix
 - shop
-- tutorial-ish/help
 - story/conversations?
 - main menu
 - end credits
@@ -25,8 +25,6 @@ Art
 - enemies
 - gold
 - exp
-- potions
-- skill icons?
 
 Sound
 - shoot
@@ -38,9 +36,20 @@ Sound
 - gold pickup
 - bg music
 
+Enemies AI:
+- bat - random, medium speed
+- santilmo - random, fast speed
+- dire wolf - follow, medium speed
+- orc - follow, fast
+- eye ball - follow, medium speed, long range
+- lava golem - follow, slow speed, holyshit damage
+- demon - follow, ???
+- wolf boss - follow, ???
+
 ====
 
 Done:
+- tutorial-ish/help
 - screenshake
 - fonts
 - map camera scrolling

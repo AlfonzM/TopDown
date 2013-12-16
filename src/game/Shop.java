@@ -25,19 +25,19 @@ public class Shop {
 			id1 = r.nextInt(SkillList.list.size()-1) + 1;
 		}while(checkIfExists(id1));
 		
-		items[0] = new ShopItem(id1, new Point(300, 600));
+		items[0] = new ShopItem(id1, new Point(Game.MWIDTH/2 - 100, Game.MHEIGHT/2 - 50));
 		
 		do{
 			id2 = r.nextInt(SkillList.list.size()-1) + 1;
 		}while(id2 == id1 || checkIfExists(id2));
 		
-		items[1] = new ShopItem(id2, new Point(400, 600));
+		items[1] = new ShopItem(id2, new Point(Game.MWIDTH/2, Game.MHEIGHT/2 - 50));
 		
 		do{
 			id3 = r.nextInt(SkillList.list.size()-1) + 1;
 		}while(id3 == id1 || id3 == id2 || checkIfExists(id3));
 		
-		items[2] = new ShopItem(id3, new Point(500, 600));
+		items[2] = new ShopItem(6, new Point(Game.MWIDTH/2 + 100, Game.MHEIGHT/2 - 50));
 		
 		isOpen = true;
 	}

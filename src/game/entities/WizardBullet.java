@@ -3,7 +3,6 @@ package game.entities;
 import game.GOType;
 import game.Game;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -15,15 +14,9 @@ public class WizardBullet extends Bullet{
 
 		// init sprite
 		sprite = new Image("res/wizard/normalatk.png").getSubImage((int) ++vx *Game.TS, (int) ++vy * Game.TS, Game.TS, Game.TS);
-		// init bounds
 		
+		// init bounds
 		bounds.setHeight(sprite.getHeight());
 		bounds.setWidth(sprite.getWidth());
-	}
-
-	@Override
-	public void render(Graphics g){
-//		g.fill(getBounds());
-		g.drawImage(sprite, pos.getX(), pos.getY());
 	}
 }

@@ -1,10 +1,13 @@
 package game.entities.skills;
 
+import game.Fonts;
 import game.Play;
-import game.entities.Enemy;
 import game.entities.GameObject;
+import game.entities.GameText;
 import game.entities.Player;
+import game.entities.enemies.Enemy;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
@@ -28,6 +31,7 @@ public class AoESlow extends Skill{
 			Enemy e = (Enemy) go;
 			if(getBounds().contains(e.pos)){
 				e.speed /= 2;
+				new GameText("Slow", e.pos, 80, Color.pink, Fonts.font16);
 			}
 		}
 	}

@@ -2,9 +2,10 @@ package game.entities.skills;
 
 import game.Play;
 import game.ScreenShake;
-import game.entities.Enemy;
+import game.Sounds;
 import game.entities.GameObject;
 import game.entities.Player;
+import game.entities.enemies.Enemy;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -28,13 +29,15 @@ public class AoEStun extends Skill{
 
 	@Override
 	public void useSkill() throws SlickException {
-		ScreenShake.screenShake(1000);
+		ScreenShake.shake();
 		for(GameObject go : Play.getEnemies()){
 			Enemy e = (Enemy) go;
 			if(getBounds().contains(e.pos)){
 				e.stun(duration);
 			}
 		}
+		
+		Sounds.stomp2.play();
 	}
 
 	@Override

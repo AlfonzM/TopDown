@@ -1,12 +1,13 @@
 package game;
 
-import game.entities.EMoveRandom;
-import game.entities.EMoveToPlayer;
+import game.entities.Bullet;
 import game.entities.GameObject;
 import game.entities.GameText;
 import game.entities.Pickable;
 import game.entities.Player;
 import game.entities.Wizard;
+import game.entities.enemies.EMoveRandom;
+import game.entities.enemies.Eyeball;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,19 +57,32 @@ public class Play extends BasicGameState{
 	// HUD
 	static Image healthGui;
 	
-	Random r;
-	Image bg;
+	// tutorial
+	static boolean tutorial;
+	
+	// game stats
+	public static int enemiesKilled;
+	public static int totalGold;
+	public static int totalExp;
+	
+	static Random r;
+	static Image bg;
 	public static GameState gameState;
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		initPlay(gc);
+	}
+
+	public static void initPlay(GameContainer gc) throws SlickException{
 		new Fonts();
+		new MyColors();
 		new ScreenShake();
 		new HUD();
 		
 		r = new Random();
 		
 		wave = 0;
-		restTime = 20000;
+		restTime = 30000;
 		timeTillNextWave = restTime;
 		
 		bg = new Image("res/bg3.png");
@@ -77,10 +91,10 @@ public class Play extends BasicGameState{
 		// Initialize arrays
 		objects = new HashMap<GOType, ArrayList<GameObject>>();
 		gameTexts = new ArrayList<GameText>();
-
+	
 		// Player
 		p = new Wizard(gc.getInput(), new Point(Game.MWIDTH/2, Game.MHEIGHT/2));
-
+	
 		objects.put(GOType.Pickable, new ArrayList<GameObject>());
 		objects.put(GOType.Player, new ArrayList<GameObject>());
 		objects.put(GOType.Enemy, new ArrayList<GameObject>());
@@ -98,7 +112,7 @@ public class Play extends BasicGameState{
 			emitterFire = ParticleIO.loadEmitter(xmlFire);
 					
 			pSystem = new ParticleSystem(image, 1500);
-
+	
 			emitterFire.setPosition(143, 55);
 			pSystem.addEmitter(emitterFire);
 			
@@ -110,17 +124,23 @@ public class Play extends BasicGameState{
 			e.printStackTrace();
 		}
 		
-		// first shop
-		shop = new Shop();
+		tutorial = true;
+		
+		// game stats
+		enemiesKilled = 0;
+		totalGold = 0;
+		totalExp = 0;
+
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		g.setAntiAlias(false);
 		g.translate(ScreenShake.offsetX, ScreenShake.offsetY);
 		g.setFont(Fonts.font16);
 		
-		bg.setAlpha(0.9f);
+		bg.setAlpha(0.8f);
 		bg.draw(offsetX, offsetY);
-		
+
 		if(gameState == GameState.rest){
 			g.translate(offsetX, offsetY);
 			
@@ -129,12 +149,64 @@ public class Play extends BasicGameState{
 			g.translate(-offsetX, -offsetY);
 		}
 		
-		
 		// ===============================
 		// offset
 		// ===============================
 		g.translate(offsetX, offsetY);
 		
+		// Tutorials
+		if(tutorial && p.isAlive){
+			switch(wave){
+			case 0:
+				g.drawString("Welcome to Hammerfall.", Game.MWIDTH/2 - Fonts.font16.getWidth("Welcome to Hammerfall.")/2, 400);
+				g.drawString("Use WASD to move, IJKL to shoot.", Game.MWIDTH/2 - Fonts.font16.getWidth("Use WASD to move, IJKL to shoot.")/2, 420);	
+				break;
+				
+			case 1:
+				if(gameState == GameState.battle){
+					g.drawString("Destroy all forces of evil.", Game.MWIDTH/2 - Fonts.font16.getWidth("Destroy all forces of evil.")/2, 400);
+					g.drawString("Collect experience and gold.", Game.MWIDTH/2 - Fonts.font16.getWidth("Collect experience and gold.")/2, 420);	
+				}
+				else{
+					if(Play.p.skills[0].name == "" && Play.p.skills[1].name == "" && Play.p.skills[2].name == "" && Play.p.skills[3].name == ""){
+						float y = 330;
+						String t = "You will be given 3 random scrolls at the end of every round,";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);
+						t = "but you only get to purchase one. So choose wisely.";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+20);	
+						t = "Select a scroll and press \"Q\" to store it to your Q skill slot.";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+40);							
+					}						
+					else{
+						float y = 330;
+						String t = "You may store other skills to E, U and O.";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);
+						t = "However, you also only get to use a skill once per round.";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+20);	
+						t = "Use them wisely.";
+						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+40);							
+					}
+				}
+				break;
+				
+			case 4:
+				float y = 400;
+				if(gameState == GameState.rest){
+					String t = "Storing a new skill to an occupied slot will replace the old one.";
+					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);							
+				}
+				break;
+				
+			case 5:
+				if(gameState == GameState.battle){
+					String t = "Good luck.";
+					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, 400);
+				}
+				break;
+			}
+		}
+		
+		// Stuff
 		for(ArrayList<GameObject> goArray : objects.values()){
 			for(GameObject go : goArray ){
 				if(!go.getClass().equals(p.getClass())){
@@ -156,7 +228,9 @@ public class Play extends BasicGameState{
 		// ===============================
 		
 		g.translate(-offsetX, -offsetY);
-		p.render(g);
+		
+		if(p.isAlive)
+			p.render(g);
 		
 		// HUD
 		HUD.render(g);
@@ -165,18 +239,21 @@ public class Play extends BasicGameState{
 //		int x = gc.getInput().getMouseX();
 //		int y = gc.getInput().getMouseY();
 //		g.drawString(x+ " " + y, x, y-20);
+		
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		HUD.update(delta);
+		HUD.update(delta, gc, sbg);
 		
 		// skip countdown
 		if(gc.getInput().isKeyPressed(Input.KEY_ENTER)){
-			timeTillNextWave = 0;
+			if(gameState == GameState.rest){
+				timeTillNextWave = 0;
+			}
 		}
 		
 		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
-			ScreenShake.screenShake(1000);
+			ScreenShake.shake();
 		}
 		
 		// check state
@@ -192,20 +269,19 @@ public class Play extends BasicGameState{
 		}
 		
 		// REST STATE
-		if(gameState == GameState.rest){
-			
+		if(gameState == GameState.rest && p.isAlive){
 			// countdown
 			timeTillNextWave -= delta;
 			
 			if(timeTillNextWave < 0){
 				// commence next wave
-				timeTillNextWave = restTime;
-				addAINorth(1);
-//				addAIWest(5);
-//				addAIEast(5);
-//				addRandomWest(15);
-//				addRandomEast(15);
 				wave++;
+				timeTillNextWave = restTime;
+				addAINorth(2 * wave);
+//				addAIWest(2 * wave);
+//				addAIEast(2 * wave);
+//				addRandomWest(10);
+//				addRandomEast(4);
 				
 				gameState = GameState.battle;
 			}
@@ -274,13 +350,13 @@ public class Play extends BasicGameState{
 	}
 	
 	public void addEnemyAI(float x, float y) throws SlickException{
-		EMoveToPlayer ee = new EMoveToPlayer(new Point(x, y));
+		Eyeball ee = new Eyeball(new Point(x, y));
 		objects.get(GOType.Enemy).add(ee);
 	}
 	
 	public void addEnemyRandom(float x, float y) throws SlickException{
 		EMoveRandom ee = new EMoveRandom(new Point(x, y));
-		Play.objects.get(GOType.Enemy).add(ee);
+		objects.get(GOType.Enemy).add(ee);
 	}
 	
 	public void addAIWest(int count) throws SlickException{
@@ -345,6 +421,11 @@ public class Play extends BasicGameState{
 		}
 		
 		return objectCount;
+	}
+
+	public static void addBullet(Bullet b) {
+		Play.objects.get(GOType.Bullet).add(b);
+		
 	}
 
 	public static int centerText(String string, AngelCodeFont font){

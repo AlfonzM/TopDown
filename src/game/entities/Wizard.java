@@ -31,7 +31,7 @@ public class Wizard extends Player{
 	
 	// attack based on arrow keys
 	public void attack(int bx, int by) throws SlickException{
-		Play.objects.get(GOType.Bullet).add(new WizardBullet(pos, bx, by, GOType.Player));
+		Play.addBullet(new WizardBullet(pos, bx, by, GOType.Player));
 		super.attack();
 	}
 }
