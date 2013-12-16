@@ -90,7 +90,7 @@ public class Play extends BasicGameState{
 		restTime = 30000;
 		timeTillNextWave = restTime;
 		
-		bg = new Image("res/bg3.png");
+		bg = new Image("res/123.png");
 		gameState = GameState.rest;
 		
 		// Initialize arrays
@@ -282,7 +282,8 @@ public class Play extends BasicGameState{
 				wave++;
 				timeTillNextWave = restTime;
 				addNorth(10 * wave, EType.orc);
-				addSouth(2*wave, EType.lavagolem);
+				addSouth(2*wave, EType.demon);
+				addEast(3*wave, EType.wolf);
 				addWest(5*wave, EType.eyeball);
 //				addNorth(10 * wave, EType.wolf);
 //				addSouth(2 * wave, EType.eyeball);
@@ -365,27 +366,27 @@ public class Play extends BasicGameState{
 	
 	public void addNorth(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
-			addEnemy(r.nextInt(Game.MWIDTH-20) + 10, 0 - i*Game.TS + 10, et);
+			addEnemy(Dir.up, i, et);
 	}
 	
 	public void addSouth(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
-			addEnemy(r.nextInt(Game.MWIDTH-20) + 10, Game.MHEIGHT + i*Game.TS + 10, et);
+			addEnemy(Dir.down, i, et);
 	}
 	
 	public void addWest(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
-			addEnemy(0 - i*Game.TS + 10, r.nextInt(Game.MHEIGHT - 100) + 50, et);
+			addEnemy(Dir.left, i, et);
 	}
 	
 	public void addEast(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
-			addEnemy(Game.GWIDTH + i*Game.TS + 10, r.nextInt(Game.MHEIGHT - 100) + 50, et);
+			addEnemy(Dir.right, i, et);
 	}
 	
-	public void addEnemy(float x, float y, EType et) throws SlickException{
+	public void addEnemy(Dir d, int i, EType et) throws SlickException{
 		Enemy e = null;
-		Point p = new Point(x, y);
+		Point p = new Point(0, 0);
 		
 		switch(et){
 		case bat:
@@ -395,7 +396,7 @@ public class Play extends BasicGameState{
 			e = new Demon(p);
 			break;
 		case eyeball:
-			e = new Eyeball(new Point(x, y));
+			e = new Eyeball(p);
 			break;
 		case lavagolem:
 			e = new LavaGolem(p);
@@ -409,6 +410,36 @@ public class Play extends BasicGameState{
 		default:
 			break;
 		}
+		
+		float x = 0, y = 0;
+		
+		switch(d){
+		case up:
+			x = r.nextInt(Game.MWIDTH-20) + 10;
+			y = 0 - (e.getBounds().getHeight() * i);
+			break;
+			
+		case down:
+			x = r.nextInt(Game.MWIDTH-20) + 10;
+			y = Game.MHEIGHT + (e.getBounds().getHeight() * i) + 10;
+			break;
+			
+		case left:
+			x = 0 - i*e.getBounds().getWidth() + 10;
+			y = r.nextInt(Game.MHEIGHT - 100) + 50;
+			break;
+			
+		case right:
+			x = Game.GWIDTH + i*e.getBounds().getWidth() + 10;
+			y = r.nextInt(Game.MHEIGHT - 100) + 50;
+			break;
+			
+		default:
+			break;
+		}
+		
+		e.pos.setX(x);
+		e.pos.setY(y);
 		
 		objects.get(GOType.Enemy).add(e);
 	}

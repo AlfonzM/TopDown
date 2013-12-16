@@ -3,11 +3,11 @@ package game.entities;
 import game.GOType;
 import game.Play;
 
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Rectangle;
 
 /*
  * Wizard class
@@ -17,6 +17,8 @@ public class Wizard extends Player{
 
 	public Wizard(Input input, Point p) throws SlickException {
 		super(input, p);
+		
+		speed = 3;
 		
 		initMoveAnimations("wizard", 4);
 		initAttackAnimations("wizard");
@@ -94,5 +96,10 @@ public class Wizard extends Player{
 	public void attack(int bx, int by) throws SlickException{
 		Play.addBullet(new WizardBullet(pos, bx, by, GOType.Player));
 		super.attack();
+	}
+	
+	@Override
+	public Rectangle getBounds(){
+		return new Rectangle(pos.getX() + 10, pos.getY(), 69 - 10, 51);
 	}
 }

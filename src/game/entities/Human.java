@@ -92,7 +92,7 @@ public class Human extends Unit{
 					animation = aRight;
 				break;
 			case down:
-				if(move.y < 0)
+				if(move.x < 0)
 					animation = aLeft;
 				else
 					animation = aRight;
