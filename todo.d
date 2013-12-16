@@ -38,14 +38,13 @@ Sound
 
 Enemies AI:
 - bat - random, medium speed
-- santilmo - random, fast speed
-- dire wolf - follow, medium speed
-- orc - follow, fast
+- dire wolf - follow, fast speed
+- orc - follow, normal
 - eye ball - follow, medium speed, long range
 - lava golem - follow, slow speed, holyshit damage
 - demon - follow, ???
-- wolf boss - follow, ???
 
+- santilmo - random, fast speed
 ====
 
 Done:

@@ -21,7 +21,7 @@ public class AoEDamage extends Skill{
 	public AoEDamage() throws SlickException {
 		super();
 		name = "SPLIT EARTH";
-		desc = "Damages all enemies in a small area around you.";
+		desc = "Deals damage to enemies in a small area around you.";
 		cost = 650;
 				
 		aoe = new Rectangle(Player.renderX - size, Player.renderY - size, size, size);
@@ -33,7 +33,7 @@ public class AoEDamage extends Skill{
 		for(GameObject go : Play.getEnemies()){
 			Enemy e = (Enemy) go;
 			if(getBounds().contains(e.pos)){
-				e.die();
+				e.takeDamage(5);
 			}
 		}
 		

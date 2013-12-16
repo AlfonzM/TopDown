@@ -53,7 +53,7 @@ public class ScreenShake {
 		}
 	}
 	
-	public static void screenShake(){
+	static private void screenShake(){
 		switch(mode){
 		case 1:			
 			if(goingUp)

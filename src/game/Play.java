@@ -6,8 +6,14 @@ import game.entities.GameText;
 import game.entities.Pickable;
 import game.entities.Player;
 import game.entities.Wizard;
+import game.entities.enemies.Bat;
+import game.entities.enemies.Demon;
+import game.entities.enemies.DireWolf;
 import game.entities.enemies.EMoveRandom;
+import game.entities.enemies.Enemy;
 import game.entities.enemies.Eyeball;
+import game.entities.enemies.LavaGolem;
+import game.entities.enemies.Orc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +23,6 @@ import java.util.Map;
 import java.util.Random;
 
 import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -276,11 +281,13 @@ public class Play extends BasicGameState{
 				// commence next wave
 				wave++;
 				timeTillNextWave = restTime;
-				addAINorth(2 * wave);
-//				addAIWest(2 * wave);
-//				addAIEast(2 * wave);
-//				addRandomWest(10);
-//				addRandomEast(4);
+				addNorth(10 * wave, EType.orc);
+				addSouth(2*wave, EType.lavagolem);
+				addWest(5*wave, EType.eyeball);
+//				addNorth(10 * wave, EType.wolf);
+//				addSouth(2 * wave, EType.eyeball);
+//				addEast(2 * wave, EType.eyeball);
+//				addWest(2 * wave, EType.eyeball);
 				
 				gameState = GameState.battle;
 			}
@@ -345,52 +352,102 @@ public class Play extends BasicGameState{
 	public static void addGoldDrop(Point pos, int value) throws SlickException{
 		objects.get(GOType.Pickable).add(new Pickable(pos, value, PickableType.gold));
 	}
+//	
+//	public void addEnemyAI(float x, float y) throws SlickException{
+//		Eyeball ee = new Eyeball(new Point(x, y));
+//		objects.get(GOType.Enemy).add(ee);
+//	}
+//	
+//	public void addEnemyRandom(float x, float y) throws SlickException{
+//		EMoveRandom ee = new EMoveRandom(new Point(x, y));
+//		objects.get(GOType.Enemy).add(ee);
+//	}
 	
-	public void addEnemyAI(float x, float y) throws SlickException{
-		Eyeball ee = new Eyeball(new Point(x, y));
-		objects.get(GOType.Enemy).add(ee);
+	public void addNorth(int count, EType et) throws SlickException{
+		for(int i = 0 ; i < count ; i++)
+			addEnemy(r.nextInt(Game.MWIDTH-20) + 10, 0 - i*Game.TS + 10, et);
 	}
 	
-	public void addEnemyRandom(float x, float y) throws SlickException{
-		EMoveRandom ee = new EMoveRandom(new Point(x, y));
-		objects.get(GOType.Enemy).add(ee);
+	public void addSouth(int count, EType et) throws SlickException{
+		for(int i = 0 ; i < count ; i++)
+			addEnemy(r.nextInt(Game.MWIDTH-20) + 10, Game.MHEIGHT + i*Game.TS + 10, et);
 	}
 	
-	public void addAIWest(int count) throws SlickException{
-		for(int i = 0; i < count; i ++){
-			addEnemyAI(0 - i*Game.TS + 10, r.nextInt(85) + 185);
+	public void addWest(int count, EType et) throws SlickException{
+		for(int i = 0 ; i < count ; i++)
+			addEnemy(0 - i*Game.TS + 10, r.nextInt(Game.MHEIGHT - 100) + 50, et);
+	}
+	
+	public void addEast(int count, EType et) throws SlickException{
+		for(int i = 0 ; i < count ; i++)
+			addEnemy(Game.GWIDTH + i*Game.TS + 10, r.nextInt(Game.MHEIGHT - 100) + 50, et);
+	}
+	
+	public void addEnemy(float x, float y, EType et) throws SlickException{
+		Enemy e = null;
+		Point p = new Point(x, y);
+		
+		switch(et){
+		case bat:
+			e = new Bat(p);
+			break;
+		case demon:
+			e = new Demon(p);
+			break;
+		case eyeball:
+			e = new Eyeball(new Point(x, y));
+			break;
+		case lavagolem:
+			e = new LavaGolem(p);
+			break;
+		case orc:
+			e = new Orc(p);
+			break;
+		case wolf:
+			e = new DireWolf(p);
+			break;
+		default:
+			break;
 		}
+		
+		objects.get(GOType.Enemy).add(e);
 	}
 	
-	public void addAIEast(int count) throws SlickException{
-		for(int i = 0; i < count; i ++){
-			addEnemyAI(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
-		}
-	}
-	
-	public void addAINorth(int count) throws SlickException{
-		for(int i = 0 ; i < count ; i++){
-			addEnemyAI(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
-		}
-	}
-	
-	public void addRandomWest(int count) throws SlickException{
-		for(int i = 0 ; i < count ; i++){
-			addEnemyRandom(0 - i*Game.TS + 10, r.nextInt(85) + 185);
-		}
-	}
-	
-	public void addRandomEast(int count) throws SlickException{
-		for(int i = 0 ; i < count ; i++){
-			addEnemyRandom(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
-		}
-	}
-	
-	public void addRandomNorth(int count) throws SlickException{
-		for(int i = 0 ; i < count ; i++){
-			addEnemyRandom(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
-		}
-	}
+//	public void addAIWest(int count) throws SlickException{
+//		for(int i = 0; i < count; i ++){
+//			addEnemyAI(0 - i*Game.TS + 10, r.nextInt(85) + 185);
+//		}
+//	}
+//	
+//	public void addAIEast(int count) throws SlickException{
+//		for(int i = 0; i < count; i ++){
+//			addEnemyAI(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
+//		}
+//	}
+//	
+//	public void addAINorth(int count) throws SlickException{
+//		for(int i = 0 ; i < count ; i++){
+//			addEnemyAI(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
+//		}
+//	}
+//	
+//	public void addRandomWest(int count) throws SlickException{
+//		for(int i = 0 ; i < count ; i++){
+//			addEnemyRandom(0 - i*Game.TS + 10, r.nextInt(85) + 185);
+//		}
+//	}
+//	
+//	public void addRandomEast(int count) throws SlickException{
+//		for(int i = 0 ; i < count ; i++){
+//			addEnemyRandom(Game.GWIDTH + i*Game.TS + 10, r.nextInt(85) + 185);
+//		}
+//	}
+//	
+//	public void addRandomNorth(int count) throws SlickException{
+//		for(int i = 0 ; i < count ; i++){
+//			addEnemyRandom(r.nextInt(417-305-Game.TS) + 305, 0 - i*Game.TS + 10);
+//		}
+//	}
 	
 	public static ArrayList<GameObject> getEnemies(){
 		return objects.get(GOType.Enemy);

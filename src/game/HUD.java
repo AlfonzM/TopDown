@@ -265,6 +265,10 @@ public class HUD {
 				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalExp);
 				t = s;
 				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.cyan);
+				
+				y += 100;
+				t = "Press [ENTER] to continue.";
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t);
 			}
 		}
 	}

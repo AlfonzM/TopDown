@@ -22,10 +22,11 @@ public class Human extends Unit{
 	public int atkCounter;
 	public boolean canAtk, isAttacking, isAnimatingAtk;
 	
-	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
+//	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
 	
 	// 4 directions animation
-	Animation aUp, aDown, aLeft, aRight;
+	Animation aLeft, aRight;
+//	Animation aUp, aDown;
 	
 	public float defaultSpeed;
 	
@@ -50,12 +51,13 @@ public class Human extends Unit{
 		updateAnimation();
 		
 		if(animation != null){
-			if(animation == aAtkLeft){
-				g.drawAnimation(animation, pos.getX() - 9, pos.getY());
-			}
-			else{
-				g.drawAnimation(animation, pos.getX(), pos.getY());
-			}
+			g.drawAnimation(animation, pos.getX(), pos.getY());
+//			if(animation == aAtkLeft){
+//				g.drawAnimation(animation, pos.getX() - 9, pos.getY());
+//			}
+//			else{
+//				g.drawAnimation(animation, pos.getX(), pos.getY());
+//			}
 		}
 		
 //		g.setColor(Color.red);
@@ -83,8 +85,18 @@ public class Human extends Unit{
 			switch(dir){
 			case left: animation = aLeft; break;
 			case right: animation = aRight; break;
-			case up: animation = aUp; break;
-			case down: animation = aDown; break;
+			case up:
+				if(move.x < 0)
+					animation = aLeft;
+				else
+					animation = aRight;
+				break;
+			case down:
+				if(move.y < 0)
+					animation = aLeft;
+				else
+					animation = aRight;
+				break;
 			default: break;
 			}
 		}
@@ -106,27 +118,27 @@ public class Human extends Unit{
 	}
 	
 	public void attack() throws SlickException{
-		switch (dir) {
-		case left:
-			aAtkLeft.restart();
-			animation = aAtkLeft;
-			break;
-		case right:
-			aAtkRight.restart();
-			animation = aAtkRight;
-			break;
-		case up:
-			aAtkUp.restart();
-			animation = aAtkUp;
-			break;
-		case down:
-			aAtkDown.restart();
-			animation = aAtkDown;
-			break;
-		default:
-			break;
-		}
-		isAnimatingAtk = true;
+//		switch (dir) {
+//		case left:
+//			aAtkLeft.restart();
+//			animation = aAtkLeft;
+//			break;
+//		case right:
+//			aAtkRight.restart();
+//			animation = aAtkRight;
+//			break;
+//		case up:
+//			aAtkUp.restart();
+//			animation = aAtkUp;
+//			break;
+//		case down:
+//			aAtkDown.restart();
+//			animation = aAtkDown;
+//			break;
+//		default:
+//			break;
+//		}
+//		isAnimatingAtk = true;
 		
 		atkCounter = 0;
 		canAtk = false;
@@ -147,72 +159,67 @@ public class Human extends Unit{
 //		Sounds.die.play();
 	}
 	
-	public void initAttackAnimations() throws SlickException{
-		initAttackAnimations(this.getClass().toString().substring(20).toLowerCase());
-	}
-	
-	public void initMoveAnimations() throws SlickException{
-		initMoveAnimations(this.getClass().toString().substring(20).toLowerCase());
-	}
-	
 	public void initAttackAnimations(String classType) throws SlickException{
-		int duration = 150;
-		if(atkDelay < 300){
-			duration = atkDelay/2;
-		}
-		
-		Image[] leftAtkImgs = 
-			{ new Image("res/" + classType + "/attack/left/1.png"),
-				new Image("res/" + classType + "/attack/left/2.png") };
-		
-		Image[] rightAtkImgs = 
-			{ new Image("res/" + classType + "/attack/right/1.png"),
-				new Image("res/" + classType + "/attack/right/2.png") };
-		
-		Image[] upAtkImgs = 
-			{ new Image("res/" + classType + "/attack/up/1.png"),
-				new Image("res/" + classType + "/attack/up/2.png") };
-		
-		Image[] downAtkImgs = 
-			{ new Image("res/" + classType + "/attack/down/1.png"),
-				new Image("res/" + classType + "/attack/down/2.png") };
-		
-		aAtkUp = new Animation(upAtkImgs, duration, true);
-		aAtkLeft = new Animation(leftAtkImgs, duration, true);
-		aAtkDown = new Animation(downAtkImgs, duration, true);
-		aAtkRight = new Animation(rightAtkImgs, duration, true);
-		
-		aAtkLeft.setLooping(false);
-		aAtkRight.setLooping(false);
-		aAtkUp.setLooping(false);
-		aAtkDown.setLooping(false);
+//		int duration = 150;
+//		if(atkDelay < 300){
+//			duration = atkDelay/2;
+//		}
+//		
+//		Image[] leftAtkImgs = 
+//			{ new Image("res/" + classType + "/attack/left/1.png"),
+//				new Image("res/" + classType + "/attack/left/2.png") };
+//		
+//		Image[] rightAtkImgs = 
+//			{ new Image("res/" + classType + "/attack/right/1.png"),
+//				new Image("res/" + classType + "/attack/right/2.png") };
+//		
+//		Image[] upAtkImgs = 
+//			{ new Image("res/" + classType + "/attack/up/1.png"),
+//				new Image("res/" + classType + "/attack/up/2.png") };
+//		
+//		Image[] downAtkImgs = 
+//			{ new Image("res/" + classType + "/attack/down/1.png"),
+//				new Image("res/" + classType + "/attack/down/2.png") };
+//		
+//		aAtkUp = new Animation(upAtkImgs, duration, true);
+//		aAtkLeft = new Animation(leftAtkImgs, duration, true);
+//		aAtkDown = new Animation(downAtkImgs, duration, true);
+//		aAtkRight = new Animation(rightAtkImgs, duration, true);
+//		
+//		aAtkLeft.setLooping(false);
+//		aAtkRight.setLooping(false);
+//		aAtkUp.setLooping(false);
+//		aAtkDown.setLooping(false);
 	}
 	
-	public void initMoveAnimations(String classType) throws SlickException{
+	public void initMoveAnimations(String classType, int count) throws SlickException{
 		final int duration = 300/2;
 		
-		Image[] leftImgs = 
-			{ new Image("res/" + classType + "/left/1.png"),
-				new Image("res/" + classType + "/left/2.png") };
+		Image[] leftImgs = new Image[count];
+		Image[] rightImgs = new Image[count];
 		
-		Image[] rightImgs = 
-			{ new Image("res/" + classType + "/right/1.png"),
-				new Image("res/" + classType + "/right/2.png") };
+//		Image[] upImgs = new Image[3];
+//		Image[] downImgs = new Image[3];
 		
-		Image[] upImgs = new Image[3];
-		Image[] downImgs = new Image[3];
-		
-		for(int i = 0; i < 3; i++){
-			upImgs[i] = new Image("res/" + classType + "/up/" + (i+1) + ".png");
-			downImgs[i] = new Image("res/" + classType + "/down/" + (i+1) + ".png");
+		for(int i = 0 ; i < count; i++){
+			leftImgs[i] = new Image("res/" + classType + "/left/" + (i+1) + ".png");
+			rightImgs[i] = new Image("res/" + classType + "/right/" + (i+1) + ".png");
 		}
+		
+//		for(int i = 0; i < 3; i++){
+//			upImgs[i] = new Image("res/" + classType + "/up/" + (i+1) + ".png");
+//			downImgs[i] = new Image("res/" + classType + "/down/" + (i+1) + ".png");
+//		}
 		
 		aLeft = new Animation(leftImgs, duration, true);
 		aRight = new Animation(rightImgs, duration, true);
-		aUp = new Animation(upImgs, duration, true);
-		aDown= new Animation(downImgs, duration, true);
+//		aUp = new Animation(upImgs, duration, true);
+//		aDown= new Animation(downImgs, duration, true);
 		
 		animation = aRight;
+		
+		bounds.setWidth(animation.getCurrentFrame().getWidth());
+		bounds.setHeight(animation.getCurrentFrame().getHeight());
 	}
 	
 	public Point centerPos(){

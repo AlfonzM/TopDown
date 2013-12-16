@@ -150,4 +150,7 @@ public class Unit extends GameObject{
 	public Rectangle getNewYBounds(){
 		return new Rectangle(pos.getX(), pos.getY() + move.y * 2, bounds.getWidth(), bounds.getHeight());
 	}
+
+	public void hitPowershot(int damage) {
+	}
 }

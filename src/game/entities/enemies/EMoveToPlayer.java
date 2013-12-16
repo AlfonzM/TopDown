@@ -13,14 +13,6 @@ public class EMoveToPlayer extends Enemy{
 		speed = defaultSpeed;
 		health = 2;
 	}
-	
-	public EMoveToPlayer(Point p, float speed) throws SlickException {
-		super(p);
-
-		this.speed = speed;
-		
-		updateTarget();
-	}
 
 	@Override
 	public void move(int delta) throws SlickException{

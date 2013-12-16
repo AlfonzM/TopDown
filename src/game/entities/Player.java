@@ -132,12 +132,13 @@ public class Player extends Human{
 			g.drawImage(i, renderX, renderY);
 		}
 		else if(animation != null){
-			if(animation == aAtkLeft){
-				g.drawAnimation(animation, renderX, renderY);
-			}
-			else{
-				g.drawAnimation(animation, renderX, renderY);
-			}
+			g.drawAnimation(animation, renderX, renderY);
+//			if(animation == aAtkLeft){
+//				g.drawAnimation(animation, renderX, renderY);
+//			}
+//			else{
+//				g.drawAnimation(animation, renderX, renderY);
+//			}
 		}
 		
 		// Render skills

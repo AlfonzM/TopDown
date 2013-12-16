@@ -22,11 +22,13 @@ public class Eyeball extends EMoveToPlayer{
 		atkType = AttackType.ranged;
 		atkDelay = 2000;
 		
+		health = 1;
+		
 		range = 150;
 		inRange = false;
 		rangeBounds = new Ellipse(Play.p.pos.getX(), Play.p.pos.getY(), range, range);
 		
-		initMoveAnimations("eyeball");
+		initMoveAnimations("eyeball", 3);
 		initAttackAnimations("eyeball");
 	}
 	
@@ -63,7 +65,7 @@ public class Eyeball extends EMoveToPlayer{
 	public void attack() throws SlickException{
 		if(!isStunned && !Play.p.invisible){
 			Bullet b = new Bullet(pos, 1, 1, GOType.Enemy);
-			b.damage = 1000;
+			b.damage = 3;
 			b.speed += 1;
 			b.range = 100;
 			Play.addBullet(b);

@@ -9,7 +9,11 @@ public class Bat extends EMoveRandom{
 		super(p);
 		// TODO Auto-generated constructor stub
 		
-		defaultSpeed = 2.2f;
+		defaultSpeed = 2.5f;
+		damage = 2;
 		speed = defaultSpeed;
+		
+		initMoveAnimations("bat", 3);
+		initAttackAnimations("bat");
 	}
 }

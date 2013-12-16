@@ -7,7 +7,13 @@ public class Demon extends Enemy {
 
 	public Demon(Point p) throws SlickException {
 		super(p);
-		// TODO Auto-generated constructor stub
+		
+		speed = 1;
+		health = 10;
+		damage = 30;
+
+		initMoveAnimations("demon", 4);
+		initAttackAnimations("demon");
 	}
 
 }

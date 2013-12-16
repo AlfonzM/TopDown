@@ -3,7 +3,7 @@ package game.entities.skills;
 import game.GOType;
 import game.Play;
 import game.entities.Bullet;
-import game.entities.WizardBullet;
+import game.entities.PowershotBullet;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -17,7 +17,7 @@ public class Powershot extends Skill{
 	public Powershot() throws SlickException {
 		icon = new Image("res/sprite.png");
 		name = "POWERSHOT";
-		desc = "Shoots a projectile in the direction you're facing,\nkilling all enemies it hits.";
+		desc = "Shoots a projectile in the direction you're facing,\ndealing damage to all enemies it hits.";
 		cost = 250;
 		
 	}
@@ -51,10 +51,7 @@ public class Powershot extends Skill{
 			break;
 		
 		}
-		WizardBullet b = new WizardBullet(pos, x, y, GOType.Player);
-		b.damage = 1000000;
-		b.health = 10000000;
-		b.range = 10000;
+		PowershotBullet b = new PowershotBullet(pos, x, y, GOType.Player);
 		Play.objects.get(GOType.Bullet).add(b);
 	}
 	

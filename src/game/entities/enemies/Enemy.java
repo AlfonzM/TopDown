@@ -23,6 +23,8 @@ public class Enemy extends Human{
 	Random r;
 	Point targetPoint;
 	
+	public boolean hitByPowershot;
+	
 	boolean isStunned;
 	int stunDuration;
 
@@ -35,13 +37,14 @@ public class Enemy extends Human{
 		
 		atkDelay = 500;
 		
-		initMoveAnimations("enemy1");
+		initMoveAnimations("enemy1", 2);
 		initAttackAnimations("enemy1");
 		
 		exp = 10;
 		
 		// stat effects
 		isStunned = false;
+		hitByPowershot = false;
 	}
 	
 	@Override
@@ -174,6 +177,15 @@ public class Enemy extends Human{
 				isStunned = false;
 				speed = defaultSpeed;
 			}
+		}
+	}
+	
+	@Override
+	public void hitPowershot(int dmg){
+		if(!hitByPowershot){
+			takeDamage(dmg);
+			hitByPowershot = true;
+			System.out.println(dmg + " " + hitByPowershot);
 		}
 	}
 
