@@ -45,12 +45,6 @@ public class Unit extends GameObject{
 		
 		// Health
 		health = 1;
-		
-		// Render
-		sprite = new Image("res/sprite.png");
-		
-		bounds.setHeight(sprite.getHeight());
-		bounds.setWidth(sprite.getWidth());
 	}
 	
 	@Override

@@ -26,7 +26,11 @@ public class Pickable extends GameObject{
 		this.value = value;
 		life = lifespan;
 		
-		sprite = new Image("res/lifeBar.png");
+		if(type == PickableType.gold)
+			sprite = new Image("res/gold.png");
+		else
+			sprite = new Image("res/exp.png");
+			
 		bounds = new Rectangle(0, 0, sprite.getWidth(), sprite.getHeight());
 	}
 
@@ -41,13 +45,8 @@ public class Pickable extends GameObject{
 
 	@Override
 	public void render(Graphics g) {
-		if(type == PickableType.exp){
-			sprite.setImageColor(0, 0, 255, (float) life/(lifespan/2));
-		}
-		else if(type == PickableType.gold){
-			sprite.setImageColor(255, 0, 255, (float) life/(lifespan/2));
-		}
-		
+//		sprite.setAlpha((float) life/(lifespan/2));
+		g.setAntiAlias(false);
 		g.drawImage(sprite, pos.getX(), pos.getY());
 	}
 
@@ -58,6 +57,7 @@ public class Pickable extends GameObject{
 		case exp:
 			String text;
 			value *= expMod;
+			
 			if(expMod > 1)
 				text = "EXP x2\n+" + value;
 			else

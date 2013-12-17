@@ -383,6 +383,8 @@ public class Player extends Human{
 			expToNextLevel += 50;
 			new GameText("LEVEL UP!!!", pos, 150, MyColors.green, Fonts.font24);
 			
+			health = maxHealth;
+			
 			Sounds.levelup.play();
 		}
 	}

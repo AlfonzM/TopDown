@@ -8,7 +8,6 @@ import org.newdawn.slick.SlickException;
 public class Blank extends Skill {
 	
 	public Blank() throws SlickException{
-		icon = new Image("res/sprite.png");
 		name = "";
 		desc = "";
 	}

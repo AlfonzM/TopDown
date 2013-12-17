@@ -3,6 +3,7 @@ package game.entities;
 import game.GOType;
 import game.Play;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
@@ -96,6 +97,19 @@ public class Wizard extends Player{
 	public void attack(int bx, int by) throws SlickException{
 		Play.addBullet(new WizardBullet(pos, bx, by, GOType.Player));
 		super.attack();
+	}
+	
+	public Rectangle getNewBounds(){
+//		return new Ellipse(pos.getX() + x, pos.getY() + y, bounds.getWidth(), bounds.getHeight());
+		return new Rectangle(pos.getX() + move.x + 10, pos.getY() + move.y, bounds.getWidth() - 20, bounds.getHeight());
+	}
+	
+	public Rectangle getNewXBounds(){
+		return new Rectangle(pos.getX() + 10 + move.x * 2, pos.getY(), bounds.getWidth() - 20, bounds.getHeight());
+	}
+	
+	public Rectangle getNewYBounds(){
+		return new Rectangle(pos.getX() + 10, pos.getY() + move.y * 2, bounds.getWidth() - 20, bounds.getHeight());
 	}
 	
 	@Override

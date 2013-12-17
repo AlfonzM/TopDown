@@ -2,11 +2,11 @@ package game.entities.skills;
 
 import game.GOType;
 import game.Play;
+import game.Sounds;
 import game.entities.Bullet;
 import game.entities.PowershotBullet;
 
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
@@ -15,7 +15,6 @@ public class Powershot extends Skill{
 	Point pos;
 
 	public Powershot() throws SlickException {
-		icon = new Image("res/sprite.png");
 		name = "POWERSHOT";
 		desc = "Shoots a projectile in the direction you're facing,\ndealing damage to all enemies it hits.";
 		cost = 250;
@@ -26,7 +25,7 @@ public class Powershot extends Skill{
 		int x = 0, y = 0;
 		
 		pos = Play.p.pos;
-		System.out.println("Powershot!");
+		Sounds.powershot.play(1, 0.5f);
 		switch(Play.p.dir){
 		case up:
 			x = 0;

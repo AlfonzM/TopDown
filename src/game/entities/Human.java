@@ -193,7 +193,14 @@ public class Human extends Unit{
 	}
 	
 	public void initMoveAnimations(String classType, int count) throws SlickException{
-		final int duration = 300/2;
+		int duration = 300/2;
+		
+		if(classType == "wolf"){
+			duration = 100;
+		}
+		else if(classType == "lupa"){
+			duration = 100;
+		}
 		
 		Image[] leftImgs = new Image[count];
 		Image[] rightImgs = new Image[count];

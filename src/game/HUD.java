@@ -91,12 +91,11 @@ public class HUD {
 		g.drawImage(levelBox, 10, 10);
 		
 		if(Play.p.isAlive){
-			g.setColor(MyColors.green);
 			g.drawString("Wave: " + Play.wave, 10, 50);
 			g.setColor(Color.white);
 			if(Play.gameState == GameState.battle && Play.getEnemies().size() <= 5){
 				Fonts.font8.drawString(10, 70, "ENEMIES REMAINING: " + Play.getEnemies().size());
-			}			
+			}
 		}
 		
 		float x = 10 + levelBox.getWidth();
@@ -136,7 +135,7 @@ public class HUD {
 			g.drawImage(exp[1], x2, 29);
 		}
 		
-		Fonts.font8.drawString(10 + levelBox.getWidth() + (x3+4-x)/2 - Fonts.font8.getWidth(Play.p.health + "/100")/2, 16, Play.p.health + "/100");
+		Fonts.font8.drawString(10 + levelBox.getWidth() + (x3+4-x)/2 - Fonts.font8.getWidth(Play.p.health + "/" + Play.p.maxHealth)/2, 16, Play.p.health + "/" + Play.p.maxHealth);
 		
 		Fonts.font16.drawString(10 + levelBox.getWidth()/2 - Fonts.font16.getWidth(""+Play.p.level)/2, 17, ""+Play.p.level);
 

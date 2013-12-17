@@ -11,11 +11,13 @@ public class Orc extends EMoveToPlayer {
 		speed = 2.2f;
 		
 		health = 3;
-		atkDelay = 1000;
+		atkDelay = 300;
 		damage = 6;
 		
 		initMoveAnimations("orc", 3);
 		initAttackAnimations("orc");
+		
+		exp = 12;
 	}
 
 }

@@ -5,11 +5,13 @@ import game.Game;
 import game.MyColors;
 import game.Play;
 import game.Shop;
+import game.Sounds;
 import game.entities.skills.Skill;
 import game.entities.skills.SkillList;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -20,6 +22,7 @@ public class ShopItem{
 	
 	Point pos;
 	int value;
+	Image icon;
 	
 	public ShopItem(int id, Point pos) throws SlickException {
 		new SkillList();
@@ -28,10 +31,25 @@ public class ShopItem{
 		this.pos = pos;
 		
 		value = 100;
+		
+		float x = pos.getX();
+		
+		if(x < Game.MWIDTH/2){
+			System.out.println(1);
+			icon = new Image("res/gandalf/wiz1.png");
+		}
+		else if(x > Game.MWIDTH/2){
+			System.out.println(2);
+			icon = new Image("res/gandalf/wiz2.png");
+		}
+		else{
+			System.out.println(3);
+			icon = new Image("res/gandalf/wiz3.png");
+		}
 	}
 	
 	public void render(Graphics g){
-		g.drawImage(s.icon, pos.getX(), pos.getY());
+		g.drawImage(icon, pos.getX(), pos.getY());
 		
 		if(Play.p.getBounds().intersects(getBounds())){
 			g.translate(-Play.offsetX, -Play.offsetY);
@@ -72,11 +90,7 @@ public class ShopItem{
 			
 			t = "-" + s.cost;
 			
-			switch(s.name){
-			case "HASTE":
-				
-				
-			}
+			Sounds.coin.play();
 		}
 		else{
 			t = "Not enough gold!";
@@ -86,6 +100,7 @@ public class ShopItem{
 	}
 
 	public Rectangle getBounds(){
-		return new Rectangle(pos.getX(), pos.getY(), s.icon.getWidth(), s.icon.getHeight());
+		return new Rectangle(pos.getX(), pos.getY(), icon.getWidth(), 
+				icon.getHeight());
 	}
 }

@@ -5,13 +5,11 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public abstract class Skill{
-	public Image icon;
 	public String desc;
 	public String name;
 	public int cost;
 	
 	public Skill() throws SlickException {
-		icon = new Image("res/sprite.png");
 	}
 	
 	//Override these methods

@@ -9,24 +9,38 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class Menu extends BasicGameState{
-	Image bg;
+	Image bg, bg2, title;
+	
+	float x;
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		bg = new Image("res/bg2.png");
-		bg.setAlpha(0.5f);
+		bg = new Image("res/123.png");
+		bg2 = new Image("res/123.png");
+		title = new Image("res/title.png");
 		new Fonts();
+		
+		x = bg.getWidth();
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.drawImage(bg, 0, 0);
-		Fonts.font48.drawString(Play.centerText("HAMMERFALL", Fonts.font48), 100, "HAMMERFALL");
-		Fonts.font16.drawString(Play.centerText("Press enter to start", Fonts.font16), 350, "Press enter to start");
+		g.drawImage(bg, x, -30);
+		g.drawImage(bg2, x - bg.getWidth(), -30);
+		
+		g.drawImage(title, Game.GWIDTH/2 - title.getWidth()/2, 100);
+		
+//		Fonts.font48.drawString(Play.centerText("HAMMERFALL", Fonts.font48), 100, "HAMMERFALL");
+		Fonts.font16.drawString(Play.centerText("PRESS ENTER TO START", Fonts.font16), 350, "PRESS ENTER TO START");
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		if(x <= 0)
+			x = bg.getWidth();
+		else
+			x-=0.5f;
+		
 		if(gc.getInput().isKeyPressed(Input.KEY_ENTER)){
 			sbg.enterState(1);
 		}

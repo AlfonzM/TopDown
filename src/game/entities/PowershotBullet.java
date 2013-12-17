@@ -1,9 +1,11 @@
 package game.entities;
 
 import game.GOType;
+import game.Game;
 import game.Play;
 import game.entities.enemies.Enemy;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
@@ -17,6 +19,13 @@ public class PowershotBullet extends WizardBullet{
 		range = 10000;
 		
 		targets = Play.getEnemies();
+
+		// init sprite
+		sprite = new Image("res/wizard/powershot.png").getSubImage((int) ++vx *48, (int) ++vy * 48, 48, 48);
+		
+		// init bounds
+		bounds.setHeight(sprite.getHeight());
+		bounds.setWidth(sprite.getWidth());
 	}
 	
 	@Override

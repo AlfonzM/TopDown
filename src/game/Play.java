@@ -8,12 +8,13 @@ import game.entities.Player;
 import game.entities.Wizard;
 import game.entities.enemies.Bat;
 import game.entities.enemies.Demon;
-import game.entities.enemies.DireWolf;
-import game.entities.enemies.EMoveRandom;
 import game.entities.enemies.Enemy;
 import game.entities.enemies.Eyeball;
 import game.entities.enemies.LavaGolem;
+import game.entities.enemies.Lupa;
 import game.entities.enemies.Orc;
+import game.entities.enemies.Skull;
+import game.entities.enemies.Wolf;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -168,13 +169,13 @@ public class Play extends BasicGameState{
 				
 			case 1:
 				if(gameState == GameState.battle){
-					g.drawString("Destroy all forces of evil.", Game.MWIDTH/2 - Fonts.font16.getWidth("Destroy all forces of evil.")/2, 400);
+					g.drawString("Destroy all forces of evil!", Game.MWIDTH/2 - Fonts.font16.getWidth("Destroy all forces of evil.")/2, 400);
 					g.drawString("Collect experience and gold.", Game.MWIDTH/2 - Fonts.font16.getWidth("Collect experience and gold.")/2, 420);	
 				}
 				else{
 					if(Play.p.skills[0].name == "" && Play.p.skills[1].name == "" && Play.p.skills[2].name == "" && Play.p.skills[3].name == ""){
 						float y = 330;
-						String t = "You will be given 3 random scrolls at the end of every round,";
+						String t = "You will be given 3 random skills at the end of every round,";
 						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);
 						t = "but you only get to purchase one. So choose wisely.";
 						g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+20);	
@@ -193,8 +194,18 @@ public class Play extends BasicGameState{
 				}
 				break;
 				
+			case 3:
+				if(gameState == GameState.rest){
+					float y = 330;
+					String t = "When you level up, you will be";
+					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);
+					t = "restored back to full health.";
+					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y+20);	
+				}
+				break;
+				
 			case 4:
-				float y = 400;
+				float y = 330;
 				if(gameState == GameState.rest){
 					String t = "Storing a new skill to an occupied slot will replace the old one.";
 					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, y);							
@@ -206,6 +217,10 @@ public class Play extends BasicGameState{
 					String t = "Good luck.";
 					g.drawString(t, Game.MWIDTH/2 - Fonts.font16.getWidth(t)/2, 400);
 				}
+				break;
+				
+			case 6:
+				tutorial = false;
 				break;
 			}
 		}
@@ -280,11 +295,117 @@ public class Play extends BasicGameState{
 			if(timeTillNextWave < 0){
 				// commence next wave
 				wave++;
-				timeTillNextWave = restTime;
-				addNorth(10 * wave, EType.orc);
-				addSouth(2*wave, EType.demon);
-				addEast(3*wave, EType.wolf);
-				addWest(5*wave, EType.eyeball);
+				if(tutorial)
+					timeTillNextWave = restTime;
+				else
+					timeTillNextWave = 15;
+				switch(wave){
+				case 1:
+					addNorth(5, EType.bat);
+					addSouth(5, EType.bat);
+					addWest(5, EType.bat);
+					addEast(5, EType.bat);
+					break;
+					
+				case 2:
+					addSouth(10, EType.bat);
+					addNorth(1, EType.orc);
+					addEast(1, EType.orc);
+					addWest(1, EType.orc);
+					break;
+					
+				case 3:
+					addWest(5, EType.orc);
+					addEast(5, EType.orc);
+					addSouth(3, EType.demon);
+					break;
+					
+				case 4:
+					addWest(5, EType.orc);
+					addEast(3, EType.demon);
+					addNorth(5, EType.bat);
+					addSouth(5, EType.bat);
+					break;
+					
+				case 5:
+					addWest(10, EType.bat);
+					addEast(10, EType.bat);
+					addNorth(5, EType.wolf);
+					addSouth(5, EType.wolf);
+					break;
+					
+				case 6:
+					addWest(5, EType.wolf);
+					addEast(5, EType.wolf);
+					addNorth(5, EType.demon);
+					break;
+					
+				case 7:
+					addWest(2, EType.eyeball);
+					addNorth(2, EType.eyeball);
+					addEast(5, EType.bat);
+					addSouth(5, EType.bat);
+					break;
+					
+				case 8:
+					addSouth(5, EType.wolf);
+					addEast(3, EType.eyeball);
+					addWest(3, EType.eyeball);
+					addNorth(5, EType.bat);
+					break;
+					
+				case 9:
+					addNorth(5, EType.orc);
+					addSouth(5, EType.demon);
+					addWest(5, EType.skull);
+					addEast(5, EType.skull);
+					break;
+					
+				case 10:
+					addSouth(1, EType.lavagolem);
+					addNorth(3, EType.wolf);
+					addEast(3, EType.demon);
+					addWest(3, EType.orc);
+					break;
+					
+				case 11:
+					addSouth(3, EType.lavagolem);
+					addNorth(10, EType.skull);
+					addWest(5, EType.wolf);
+					addEast(5, EType.eyeball);
+					break;
+					
+				case 12:
+					addNorth(5, EType.eyeball);
+					addSouth(5, EType.eyeball);
+					addWest(5, EType.eyeball);
+					break;
+					
+				case 13:
+					addNorth(10, EType.bat);
+					addSouth(10, EType.bat);
+					addWest(10, EType.skull);
+					addEast(10, EType.skull);
+					break;
+					
+				case 14:
+					addNorth(5, EType.lavagolem);
+					addSouth(5, EType.lavagolem);
+					addWest(10, EType.skull);
+					addEast(10, EType.skull);					
+					break;
+					
+				case 15:
+					EType e = EType.lupa;
+					addNorth(1, e);
+					addWest(10, EType.wolf);
+					addEast(10, EType.wolf);
+					addSouth(3, EType.lavagolem);
+					break;
+				}
+//				addSouth(2*wave, e);
+//				addEast(2*wave, e);
+//				addWest(2*wave, e);
 //				addNorth(10 * wave, EType.wolf);
 //				addSouth(2 * wave, EType.eyeball);
 //				addEast(2 * wave, EType.eyeball);
@@ -364,27 +485,27 @@ public class Play extends BasicGameState{
 //		objects.get(GOType.Enemy).add(ee);
 //	}
 	
-	public void addNorth(int count, EType et) throws SlickException{
+	public static void addNorth(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
 			addEnemy(Dir.up, i, et);
 	}
 	
-	public void addSouth(int count, EType et) throws SlickException{
+	public static void addSouth(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
 			addEnemy(Dir.down, i, et);
 	}
 	
-	public void addWest(int count, EType et) throws SlickException{
+	public static void addWest(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
 			addEnemy(Dir.left, i, et);
 	}
 	
-	public void addEast(int count, EType et) throws SlickException{
+	public static void addEast(int count, EType et) throws SlickException{
 		for(int i = 0 ; i < count ; i++)
 			addEnemy(Dir.right, i, et);
 	}
 	
-	public void addEnemy(Dir d, int i, EType et) throws SlickException{
+	public static void addEnemy(Dir d, int i, EType et) throws SlickException{
 		Enemy e = null;
 		Point p = new Point(0, 0);
 		
@@ -405,7 +526,13 @@ public class Play extends BasicGameState{
 			e = new Orc(p);
 			break;
 		case wolf:
-			e = new DireWolf(p);
+			e = new Wolf(p);
+			break;
+		case skull:
+			e = new Skull(p);
+			break;
+		case lupa:
+			e = new Lupa(p);
 			break;
 		default:
 			break;
@@ -430,7 +557,7 @@ public class Play extends BasicGameState{
 			break;
 			
 		case right:
-			x = Game.GWIDTH + i*e.getBounds().getWidth() + 10;
+			x = Game.MWIDTH + i*e.getBounds().getWidth() + 10;
 			y = r.nextInt(Game.MHEIGHT - 100) + 50;
 			break;
 			

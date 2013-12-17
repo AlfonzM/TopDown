@@ -6,5 +6,7 @@ public enum EType {
 	orc,
 	eyeball,
 	lavagolem,
-	demon
+	demon,
+	skull,
+	lupa
 }

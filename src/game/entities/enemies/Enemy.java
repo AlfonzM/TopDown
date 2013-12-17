@@ -37,9 +37,6 @@ public class Enemy extends Human{
 		
 		atkDelay = 500;
 		
-		initMoveAnimations("enemy1", 2);
-		initAttackAnimations("enemy1");
-		
 		exp = 10;
 		
 		// stat effects
@@ -156,7 +153,7 @@ public class Enemy extends Human{
 		if(r.nextBoolean())
 			Play.addExpDrop(pos, exp);
 		else{
-			Play.addGoldDrop(pos, 10);
+			Play.addGoldDrop(pos,r.nextInt(10)+10);
 		}
 		
 		Play.enemiesKilled++;

@@ -22,7 +22,7 @@ public class Eyeball extends EMoveToPlayer{
 		atkType = AttackType.ranged;
 		atkDelay = 2000;
 		
-		health = 1;
+		health = 4;
 		
 		range = 150;
 		inRange = false;
@@ -30,6 +30,8 @@ public class Eyeball extends EMoveToPlayer{
 		
 		initMoveAnimations("eyeball", 3);
 		initAttackAnimations("eyeball");
+		
+		exp = 18;
 	}
 	
 	@Override
@@ -54,9 +56,9 @@ public class Eyeball extends EMoveToPlayer{
 					move.x = -speed;					
 				}
 			}
+			
+			super.move(delta);
 		}
-		
-		super.move(delta);
 		
 		updateTarget();
 	}

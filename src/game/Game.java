@@ -12,11 +12,11 @@ public class Game extends StateBasedGame{
 	 */
 	
 	public static int GWIDTH = 720, GHEIGHT = 480;
-	public static int MWIDTH = 960, MHEIGHT = 960;
+	public static int MWIDTH = 1281, MHEIGHT = 873;
 	public static int TS = 24;
 
 	public Game() {
-		super("Top Down Game");
+		super("Hammerfall");
 	}
 
 	@Override
