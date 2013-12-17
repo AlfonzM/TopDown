@@ -50,13 +50,13 @@ public class HUD {
 		
 		alpha = 0;
 		cNumTime = 500;
-		c1Time = 2000;
+		c1Time = 1000;
 	}
 
 	public static void render(Graphics g){
 		g.translate(-ScreenShake.offsetX, -ScreenShake.offsetY);
 		
-		if(Play.p.isAlive && Play.getEnemies().isEmpty()){
+		if(!Play.win && Play.p.isAlive && Play.getEnemies().isEmpty()){
 			String t = "Next wave in";
 			g.drawString(t, Play.centerText(t, Fonts.font16), 10);
 			
@@ -90,7 +90,7 @@ public class HUD {
 		// level
 		g.drawImage(levelBox, 10, 10);
 		
-		if(Play.p.isAlive){
+		if(!Play.win && Play.p.isAlive){
 			g.drawString("Wave: " + Play.wave, 10, 50);
 			g.setColor(Color.white);
 			if(Play.gameState == GameState.battle && Play.getEnemies().size() <= 5){
@@ -152,6 +152,7 @@ public class HUD {
 		int gap = 40;
 		float xpos = 0, ypos = Game.GHEIGHT - 20 - onSkill.getHeight();
 		
+		if(!Play.win || !Play.p.isAlive)
 		for(int i = 0 ; i < Play.p.skills.length ; i++){
 			String hotkey = "";
 			
@@ -222,6 +223,68 @@ public class HUD {
 		}
 		
 		// GAME OVER
+		if(Play.win){
+			g.setColor(new Color(0, 0, 0, alpha));
+			g.fill(new Rectangle(0, 0, Game.GWIDTH,Game.GHEIGHT));
+
+			g.setColor(Color.white);
+			
+			if(c1 >= c1Time){
+				int y = 70;
+				String t = "You have successfully defended Hammerfall!";
+				Fonts.font24.drawString(Play.centerText(t, Fonts.font24), y, t, MyColors.green);
+				int x4 = 30;
+				y += 30;
+				t = "Thank you for playing!";
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t);
+				
+				y += 60;
+				
+				t = "WAVES SURVIVED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+				
+				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave - 1);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.green);
+				
+				y += 40;
+				t = "ENEMIES KILLED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.enemiesKilled);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.red);
+				
+				y += 40;
+				t = "TOTAL GOLD COLLECTED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalGold);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.yellow);
+				
+				y += 40;
+				t = "TOTAL EXPERIENCE EARNED";
+				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
+				
+				s = NumberFormat.getNumberInstance(Locale.US).format(Play.totalExp);
+				t = s;
+				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.cyan);
+				
+				y += 70;
+				t = "Press [ENTER] to play again.";
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t, MyColors.yellow);
+
+				y += 50;
+				t = "This game was made by Pixelxia in 72 hours";
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t);
+				
+				y += 20;
+				t = "for Ludum Dare 28 [Jam]. Theme - You Only Get One";
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t);
+			
+			}
+		}
 		if(!Play.p.isAlive){
 			g.setColor(new Color(0, 0, 0, alpha));
 			g.fill(new Rectangle(0, 0, Game.GWIDTH,Game.GHEIGHT));
@@ -234,7 +297,7 @@ public class HUD {
 				Fonts.font24.drawString(Play.centerText(t, Fonts.font24), y, t);
 				float x4 = 30;
 				y += 60;
-				t = "WAVES DEFENDED";
+				t = "WAVES SURVIVED";
 				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
 				
 				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave - 1);
@@ -267,7 +330,7 @@ public class HUD {
 				
 				y += 100;
 				t = "Press [ENTER] to continue.";
-				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t);
+				Fonts.font16.drawString(Play.centerText(t, Fonts.font16), y, t, MyColors.yellow);
 			}
 		}
 	}
@@ -282,7 +345,7 @@ public class HUD {
 			}
 		}
 		
-		if(!Play.p.isAlive){
+		if(!Play.p.isAlive || Play.win){
 			if(alpha < 0.6f){
 				alpha += 0.004f;
 			}

@@ -58,7 +58,7 @@ public class Play extends BasicGameState{
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
-	public static ConfigurableEmitter emitterUnit, emitterFire;
+	public static ConfigurableEmitter emitterUnit;
 	
 	// HUD
 	static Image healthGui;
@@ -74,6 +74,7 @@ public class Play extends BasicGameState{
 	static Random r;
 	static Image bg;
 	public static GameState gameState;
+	public static boolean win;
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		initPlay(gc);
@@ -112,25 +113,18 @@ public class Play extends BasicGameState{
 		try{
 			Image image = new Image("res/particles/square.png");
 			File xml = new File("res/particles/unitdeath.xml");
-			File xmlFire = new File("res/particles/fire.xml");
 			
 			emitterUnit = ParticleIO.loadEmitter(xml);
-			emitterFire = ParticleIO.loadEmitter(xmlFire);
 					
 			pSystem = new ParticleSystem(image, 1500);
-	
-			emitterFire.setPosition(143, 55);
-			pSystem.addEmitter(emitterFire);
 			
-			ConfigurableEmitter e = emitterFire.duplicate();
-			e.setPosition(569, 55);
-			pSystem.addEmitter(e);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
 		
 		tutorial = true;
+		win = false;
 		
 		// game stats
 		enemiesKilled = 0;
@@ -139,6 +133,10 @@ public class Play extends BasicGameState{
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		if(wave >= 15 && gameState == GameState.rest){
+			win = true;
+		}
+		
 		g.setAntiAlias(false);
 		g.translate(ScreenShake.offsetX, ScreenShake.offsetY);
 		g.setFont(Fonts.font16);
@@ -146,7 +144,7 @@ public class Play extends BasicGameState{
 		bg.setAlpha(0.8f);
 		bg.draw(offsetX, offsetY);
 
-		if(gameState == GameState.rest){
+		if(!win && gameState == GameState.rest){
 			g.translate(offsetX, offsetY);
 			
 			if(Shop.isOpen)
@@ -163,14 +161,14 @@ public class Play extends BasicGameState{
 		if(tutorial && p.isAlive){
 			switch(wave){
 			case 0:
-				g.drawString("Welcome to Hammerfall.", Game.MWIDTH/2 - Fonts.font16.getWidth("Welcome to Hammerfall.")/2, 400);
-				g.drawString("Use WASD to move, IJKL to shoot.", Game.MWIDTH/2 - Fonts.font16.getWidth("Use WASD to move, IJKL to shoot.")/2, 420);	
+				g.drawString("Hordes of evil forces are incoming!", Game.MWIDTH/2 - Fonts.font16.getWidth("Hordes of evil forces are incoming!")/2, 330);
+				g.drawString("You must defend Hammerfall!", Game.MWIDTH/2 - Fonts.font16.getWidth("You must defend Hammerfall!")/2, 350);	
 				break;
 				
 			case 1:
 				if(gameState == GameState.battle){
-					g.drawString("Destroy all forces of evil!", Game.MWIDTH/2 - Fonts.font16.getWidth("Destroy all forces of evil.")/2, 400);
-					g.drawString("Collect experience and gold.", Game.MWIDTH/2 - Fonts.font16.getWidth("Collect experience and gold.")/2, 420);	
+					g.drawString("Use WASD to move, IJKL to shoot.", Game.MWIDTH/2 - Fonts.font16.getWidth("Use WASD to move, IJKL to shoot.")/2, 330);
+					g.drawString("Collect experience and gold.", Game.MWIDTH/2 - Fonts.font16.getWidth("Collect experience and gold.")/2, 350);	
 				}
 				else{
 					if(Play.p.skills[0].name == "" && Play.p.skills[1].name == "" && Play.p.skills[2].name == "" && Play.p.skills[3].name == ""){
@@ -276,7 +274,7 @@ public class Play extends BasicGameState{
 		}
 		
 		// check state
-		if(gameState == GameState.battle && getEnemies().isEmpty()){
+		if(!win && gameState == GameState.battle && getEnemies().isEmpty()){
 			gameState = GameState.rest;
 			
 			for(int i = 0 ; i < p.skills.length ; i++){
@@ -288,17 +286,18 @@ public class Play extends BasicGameState{
 		}
 		
 		// REST STATE
-		if(gameState == GameState.rest && p.isAlive){
+		if(!win && gameState == GameState.rest && p.isAlive){
 			// countdown
 			timeTillNextWave -= delta;
 			
 			if(timeTillNextWave < 0){
 				// commence next wave
+				Shop.isOpen = false;
 				wave++;
 				if(tutorial)
 					timeTillNextWave = restTime;
 				else
-					timeTillNextWave = 15;
+					timeTillNextWave = 15000;
 				switch(wave){
 				case 1:
 					addNorth(5, EType.bat);
@@ -382,10 +381,10 @@ public class Play extends BasicGameState{
 					break;
 					
 				case 13:
-					addNorth(10, EType.bat);
-					addSouth(10, EType.bat);
-					addWest(10, EType.skull);
-					addEast(10, EType.skull);
+					addNorth(15, EType.bat);
+					addSouth(15, EType.skull);
+					addWest(5, EType.lavagolem);
+					addEast(10, EType.wolf);
 					break;
 					
 				case 14:

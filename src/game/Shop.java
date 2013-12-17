@@ -37,7 +37,7 @@ public class Shop {
 			id3 = r.nextInt(SkillList.list.size()-1) + 1;
 		}while(id3 == id1 || id3 == id2 || checkIfExists(id3));
 		
-		items[2] = new ShopItem(1, new Point(Game.MWIDTH/2 + 100, Game.MHEIGHT/2 - 50));
+		items[2] = new ShopItem(id3, new Point(Game.MWIDTH/2 + 100, Game.MHEIGHT/2 - 50));
 		
 		isOpen = true;
 	}

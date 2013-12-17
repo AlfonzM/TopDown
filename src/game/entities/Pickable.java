@@ -45,7 +45,7 @@ public class Pickable extends GameObject{
 
 	@Override
 	public void render(Graphics g) {
-//		sprite.setAlpha((float) life/(lifespan/2));
+		sprite.setAlpha((float) life/(lifespan/2));
 		g.setAntiAlias(false);
 		g.drawImage(sprite, pos.getX(), pos.getY());
 	}
