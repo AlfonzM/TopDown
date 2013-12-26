@@ -2,25 +2,25 @@ TODO
 
 Coding
 * Core
-- enemies per wave
+- enemies per wave balance?
+- more skills
+- bug: reset timer on duration skills if replaced
 
 * Polishing
-- power shot bullet
 - particles
 	- normal atk hit
 	- player hit by enemy
 	- exp up (cyan particles)
 	- gold up (yellow particles)
-- story/conversations?
-- main menu
+	- stat effecst?
+- skill effects
 - end credits
 
 Art
-- gold
-- exp
 
 Sound
 - button clicks
+- exp up goldup
 - bg music
 
 Enemies AI:
@@ -30,10 +30,14 @@ Enemies AI:
 - eye ball - follow, medium speed, long range
 - lava golem - follow, slow speed, holyshit damage
 - demon - follow, ???
-- santilmo - random, fast speed
+- skull - random, fast speed
 ====
 
 Done:
+- main menu
+- power shot bullet
+- gold
+- exp
 - drop pickup color fix
 - shop
 - player

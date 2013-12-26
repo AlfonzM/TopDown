@@ -10,12 +10,16 @@ import game.entities.GameObject;
 import game.entities.GameText;
 import game.entities.Human;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
 
 public class Enemy extends Human{
 	int exp;
@@ -140,8 +144,9 @@ public class Enemy extends Human{
 		if(!isStunned){
 			super.attack();
 			
-			if(atkType == AttackType.melee)
+			if(atkType == AttackType.melee){
 				Play.p.takeDamage(damage);
+			}
 		}
 	}
 	

@@ -1,7 +1,8 @@
 package game.entities.enemies;
 
-import game.Fonts;
+import game.ScreenShake;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
@@ -14,7 +15,8 @@ public class Lupa extends EMoveToPlayer{
 	public Lupa(Point p) throws SlickException {
 		super(p);
 
-		speed = 2f;
+		defaultSpeed = 2f;
+		speed = defaultSpeed;
 		health = 50;
 		
 		atkDelay = 200;
@@ -28,6 +30,9 @@ public class Lupa extends EMoveToPlayer{
 		lv3 = false;
 		
 		exp = 100;
+		
+		dieColors[0] = new Color(80, 80, 80);
+		dieColors[1] = new Color(0, 0, 0);
 	}
 	
 	@Override
@@ -63,7 +68,7 @@ public class Lupa extends EMoveToPlayer{
 	@Override
 	public void render(Graphics g){
 		super.render(g);
-		g.drawString(""+health, pos.getX() + bounds.getWidth()/2 - Fonts.font16.getWidth(""+health), pos.getY() - 20);
+//		g.drawString(""+health, pos.getX() + bounds.getWidth()/2 - Fonts.font16.getWidth(""+health), pos.getY() - 20);
 	}
 	
 	public Rectangle getNewBounds(){
@@ -81,5 +86,11 @@ public class Lupa extends EMoveToPlayer{
 	@Override
 	public Rectangle getBounds(){
 		return new Rectangle(pos.getX() + 5, pos.getY(), 69 - 5, 51);
+	}
+	
+	@Override
+	public void die() throws SlickException{
+		super.die();
+		ScreenShake.shake();
 	}
 }

@@ -12,9 +12,6 @@ public class WizardBullet extends Bullet{
 	public WizardBullet(Point p, float vx, float vy, GOType type) throws SlickException {
 		super(p, vx, vy, type);
 
-		// init sprite
-		sprite = new Image("res/wizard/normalatk.png").getSubImage((int) ++vx *Game.TS, (int) ++vy * Game.TS, Game.TS, Game.TS);
-		
 		// init bounds
 		bounds.setHeight(sprite.getHeight());
 		bounds.setWidth(sprite.getWidth());

@@ -20,6 +20,7 @@ public class SkillList {
 		add(new SpreadShot());
 		add(new ExpUp());
 		add(new GoldUp());
+		add(new Shoot360());
 	}
 	
 	public void add(Skill s){

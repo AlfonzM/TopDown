@@ -14,6 +14,8 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class HUD {
 	static Image offSkill, onSkill;
@@ -30,7 +32,14 @@ public class HUD {
 	
 	static int waveDisplay, goldDisplay, expDisplay;
 	
-	public HUD() throws SlickException{
+	static FadeInTransition ft = new FadeInTransition();
+	
+	// wave# counter
+	static int counter;
+	static boolean dispWave;
+	static float waveAlpha, waveScale;
+	
+	public HUD(StateBasedGame sbg) throws SlickException{
 		Image spritesheet = new Image("res/HUD.png");
 		offSkill = spritesheet.getSubImage(0, 0, 54, 32);
 		onSkill = spritesheet.getSubImage(0, 32, 54, 32);
@@ -51,6 +60,11 @@ public class HUD {
 		alpha = 0;
 		cNumTime = 500;
 		c1Time = 1000;
+		
+		counter = 0;
+		dispWave = true;
+		waveAlpha = 0;
+		waveScale = 0;
 	}
 
 	public static void render(Graphics g){
@@ -64,8 +78,8 @@ public class HUD {
 //			+ (timeTillNextWave%100/10);
 			Fonts.font24.drawString(Play.centerText(t, Fonts.font24), 27, t);
 			
-			t = "(ENTER TO SKIP)";
-			Fonts.font8.drawString(Play.centerText(t, Fonts.font8), 55, t);
+			t = "Hit Enter to skip.";
+			Fonts.font16.drawString(Play.centerText(t, Fonts.font16), 55, t);
 		}
 
 		// HUD
@@ -90,11 +104,17 @@ public class HUD {
 		// level
 		g.drawImage(levelBox, 10, 10);
 		
+		if(Play.gameState == GameState.battle && dispWave){
+			String t = "WAVE: " + Play.wave;
+			Fonts.font24.drawString(Play.centerText(t, Fonts.font24), 200, t, new Color(255, 255, 255, waveAlpha));
+		}
+		
 		if(!Play.win && Play.p.isAlive){
+			
 			g.drawString("Wave: " + Play.wave, 10, 50);
 			g.setColor(Color.white);
 			if(Play.gameState == GameState.battle && Play.getEnemies().size() <= 5){
-				Fonts.font8.drawString(10, 70, "ENEMIES REMAINING: " + Play.getEnemies().size());
+				Fonts.font16.drawString(10, 70, "Enemies remaining: " + Play.getEnemies().size());
 			}
 		}
 		
@@ -353,10 +373,26 @@ public class HUD {
 				c1 += delta;
 			}
 			else{
-				if(gc.getInput().isKeyPressed(Input.KEY_ENTER)){
-					sbg.enterState(0);
-					Play.initPlay(gc);					
+				if(gc.getInput().isKeyDown(Input.KEY_ENTER)){
+					sbg.enterState(0, new FadeOutTransition(), ft);
 				}
+			}
+		}
+		
+		if(Play.gameState == GameState.battle && dispWave){
+			int x = 3000;
+			
+			counter += delta;
+			if(counter < x){
+				if(waveAlpha <= 1)
+					waveAlpha += 0.05f;
+			}
+			else if(counter > x){
+				waveAlpha -= 0.05f;
+			}
+			
+			if(counter >= x*2){
+				dispWave = false;
 			}
 		}
 	}

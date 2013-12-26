@@ -2,6 +2,7 @@ package game.entities.skills;
 
 import game.Fonts;
 import game.Play;
+import game.Sounds;
 import game.entities.GameObject;
 import game.entities.GameText;
 import game.entities.Player;
@@ -27,10 +28,11 @@ public class AoESlow extends Skill{
 
 	@Override
 	public void useSkill() throws SlickException {
+		Sounds.slow.play();
 		for(GameObject go : Play.getEnemies()){
 			Enemy e = (Enemy) go;
 			if(getBounds().contains(e.pos)){
-				e.speed /= 2;
+				e.speed /= 3;
 				new GameText("Slow", e.pos, 80, Color.pink, Fonts.font16);
 			}
 		}

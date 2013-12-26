@@ -1,14 +1,19 @@
 package game.entities;
 
+import java.io.File;
+import java.io.IOException;
+
 import game.Play;
 import game.Sounds;
 
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
 
 /*
  * Components: unit, attack, attack animations
@@ -20,6 +25,7 @@ public class Human extends Unit{
 	public int damage;
 	public int atkDelay;
 	public int atkCounter;
+	protected AttackType atkType;
 	public boolean canAtk, isAttacking, isAnimatingAtk;
 	
 //	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
@@ -29,8 +35,11 @@ public class Human extends Unit{
 //	Animation aUp, aDown;
 	
 	public float defaultSpeed;
+	public boolean isHit;
 	
-	protected AttackType atkType;
+	// for particle
+	protected Color[] dieColors;
+	Color[] sparkColors;
 	
 	public Human(Point p) throws SlickException{
 		super(p);
@@ -44,6 +53,16 @@ public class Human extends Unit{
 		isAttacking = false;
 		isAnimatingAtk = false;
 		atkType = AttackType.melee;
+		
+		isHit = false;
+		
+		dieColors = new Color[2];
+		dieColors[0] = new Color(255, 255 * 1, 255 * 1);
+		dieColors[1] = new Color(255, 255 * 1, 255 * 1);
+		
+		sparkColors = new Color[2];
+		sparkColors[0] = new Color(255, 255 * 1, 255 * 1);
+		sparkColors[1] = new Color(255, 255 * 1, 255 * 1);
 	}
 	
 	@Override
@@ -51,7 +70,14 @@ public class Human extends Unit{
 		updateAnimation();
 		
 		if(animation != null){
-			g.drawAnimation(animation, pos.getX(), pos.getY());
+			if(isHit){
+				Image i = animation.getCurrentFrame();
+				i.drawFlash(pos.getX(), pos.getY());
+				isHit = false;
+			}
+			else{
+				g.drawAnimation(animation, pos.getX(), pos.getY());	
+			}
 //			if(animation == aAtkLeft){
 //				g.drawAnimation(animation, pos.getX() - 9, pos.getY());
 //			}
@@ -149,11 +175,31 @@ public class Human extends Unit{
 			attack();
 		}
 	}
+
+	@Override
+	public void takeDamage(int i){
+		super.takeDamage(i);
+		
+		if(isAlive){			
+			ConfigurableEmitter e = Play.emitterSpark.duplicate();
+			e.addColorPoint(0, dieColors[0]);
+			e.addColorPoint(1, dieColors[1]);
+			e.setPosition(pos.getX() + getBounds().getWidth()/2, pos.getY() + 5);
+			Play.pSystem.addEmitter(e);
+			
+			isHit = true;
+		}
+	}
 	
+	@Override
 	public void die() throws SlickException{
 		super.die();
+		
 		ConfigurableEmitter e = Play.emitterUnit.duplicate();
-		e.setPosition(pos.getX(), pos.getY());
+		for(int i = 0; i < 2; i++){
+			e.addColorPoint(i, dieColors[i]);
+		}
+		e.setPosition(pos.getX(), pos.getY() + getBounds().getHeight()/2);
 		Play.pSystem.addEmitter(e);
 		
 //		Sounds.die.play();

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.newdawn.slick.AngelCodeFont;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -35,6 +36,7 @@ import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
 
 public class Play extends BasicGameState{
 	// Constant Values
@@ -58,7 +60,7 @@ public class Play extends BasicGameState{
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
-	public static ConfigurableEmitter emitterUnit;
+	public static ConfigurableEmitter emitterUnit, emitterSpark;
 	
 	// HUD
 	static Image healthGui;
@@ -76,15 +78,17 @@ public class Play extends BasicGameState{
 	public static GameState gameState;
 	public static boolean win;
 	
+	
+	int gameCounter = 0;
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		initPlay(gc);
+		initPlay(gc, sbg);
 	}
 
-	public static void initPlay(GameContainer gc) throws SlickException{
+	public static void initPlay(GameContainer gc, StateBasedGame sbg) throws SlickException{
 		new Fonts();
 		new MyColors();
 		new ScreenShake();
-		new HUD();
+		new HUD(sbg);
 		
 		r = new Random();
 		
@@ -113,11 +117,13 @@ public class Play extends BasicGameState{
 		try{
 			Image image = new Image("res/particles/square.png");
 			File xml = new File("res/particles/unitdeath.xml");
+			File xml2 = new File("res/particles/spark.xml");
 			
 			emitterUnit = ParticleIO.loadEmitter(xml);
-					
-			pSystem = new ParticleSystem(image, 1500);
+			emitterSpark = ParticleIO.loadEmitter(xml2);
 			
+			pSystem = new ParticleSystem(image, 1500);
+			pSystem.setRemoveCompletedEmitters(true);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -140,8 +146,6 @@ public class Play extends BasicGameState{
 		g.setAntiAlias(false);
 		g.translate(ScreenShake.offsetX, ScreenShake.offsetY);
 		g.setFont(Fonts.font16);
-		
-		bg.setAlpha(0.8f);
 		bg.draw(offsetX, offsetY);
 
 		if(!win && gameState == GameState.rest){
@@ -269,11 +273,7 @@ public class Play extends BasicGameState{
 			}
 		}
 		
-		if(gc.getInput().isKeyPressed(Input.KEY_F2)){
-			ScreenShake.shake();
-		}
-		
-		// check state
+		// on enemies empty / battle end
 		if(!win && gameState == GameState.battle && getEnemies().isEmpty()){
 			gameState = GameState.rest;
 			
@@ -285,132 +285,14 @@ public class Play extends BasicGameState{
 			shop = new Shop();
 		}
 		
-		// REST STATE
+		// while on rest state
 		if(!win && gameState == GameState.rest && p.isAlive){
 			// countdown
 			timeTillNextWave -= delta;
 			
 			if(timeTillNextWave < 0){
 				// commence next wave
-				Shop.isOpen = false;
-				wave++;
-				if(tutorial)
-					timeTillNextWave = restTime;
-				else
-					timeTillNextWave = 15000;
-				switch(wave){
-				case 1:
-					addNorth(5, EType.bat);
-					addSouth(5, EType.bat);
-					addWest(5, EType.bat);
-					addEast(5, EType.bat);
-					break;
-					
-				case 2:
-					addSouth(10, EType.bat);
-					addNorth(1, EType.orc);
-					addEast(1, EType.orc);
-					addWest(1, EType.orc);
-					break;
-					
-				case 3:
-					addWest(5, EType.orc);
-					addEast(5, EType.orc);
-					addSouth(3, EType.demon);
-					break;
-					
-				case 4:
-					addWest(5, EType.orc);
-					addEast(3, EType.demon);
-					addNorth(5, EType.bat);
-					addSouth(5, EType.bat);
-					break;
-					
-				case 5:
-					addWest(10, EType.bat);
-					addEast(10, EType.bat);
-					addNorth(5, EType.wolf);
-					addSouth(5, EType.wolf);
-					break;
-					
-				case 6:
-					addWest(5, EType.wolf);
-					addEast(5, EType.wolf);
-					addNorth(5, EType.demon);
-					break;
-					
-				case 7:
-					addWest(2, EType.eyeball);
-					addNorth(2, EType.eyeball);
-					addEast(5, EType.bat);
-					addSouth(5, EType.bat);
-					break;
-					
-				case 8:
-					addSouth(5, EType.wolf);
-					addEast(3, EType.eyeball);
-					addWest(3, EType.eyeball);
-					addNorth(5, EType.bat);
-					break;
-					
-				case 9:
-					addNorth(5, EType.orc);
-					addSouth(5, EType.demon);
-					addWest(5, EType.skull);
-					addEast(5, EType.skull);
-					break;
-					
-				case 10:
-					addSouth(1, EType.lavagolem);
-					addNorth(3, EType.wolf);
-					addEast(3, EType.demon);
-					addWest(3, EType.orc);
-					break;
-					
-				case 11:
-					addSouth(3, EType.lavagolem);
-					addNorth(10, EType.skull);
-					addWest(5, EType.wolf);
-					addEast(5, EType.eyeball);
-					break;
-					
-				case 12:
-					addNorth(5, EType.eyeball);
-					addSouth(5, EType.eyeball);
-					addWest(5, EType.eyeball);
-					break;
-					
-				case 13:
-					addNorth(15, EType.bat);
-					addSouth(15, EType.skull);
-					addWest(5, EType.lavagolem);
-					addEast(10, EType.wolf);
-					break;
-					
-				case 14:
-					addNorth(5, EType.lavagolem);
-					addSouth(5, EType.lavagolem);
-					addWest(10, EType.skull);
-					addEast(10, EType.skull);					
-					break;
-					
-				case 15:
-					EType e = EType.lupa;
-					addNorth(1, e);
-					addWest(10, EType.wolf);
-					addEast(10, EType.wolf);
-					addSouth(3, EType.lavagolem);
-					break;
-				}
-//				addSouth(2*wave, e);
-//				addEast(2*wave, e);
-//				addWest(2*wave, e);
-//				addNorth(10 * wave, EType.wolf);
-//				addSouth(2 * wave, EType.eyeball);
-//				addEast(2 * wave, EType.eyeball);
-//				addWest(2 * wave, EType.eyeball);
-				
-				gameState = GameState.battle;
+				battleBegin();
 			}
 		}
 		
@@ -466,6 +348,131 @@ public class Play extends BasicGameState{
 	
 	// UTILITY FUNCTIONS
 	
+	private void battleBegin() throws SlickException {
+		HUD.counter = 0;
+		HUD.waveAlpha = 0;
+		
+		Shop.isOpen = false;
+		wave++;
+		if(tutorial)
+			timeTillNextWave = restTime;
+		else
+			timeTillNextWave = 15000;
+		switch(wave){
+		case 1:
+//			tutorial=false;
+			addNorth(1, EType.bat);
+			addWest(5, EType.bat);
+			addEast(5, EType.bat);
+//			addNorth(5, EType.skull);
+//			addWest(1, EType.lavagolem);
+//			addWest(3, EType.eyeball);
+//			addSouth(3, EType.demon);
+//			addSouth(3, EType.orc);
+//			addEast(1, EType.lupa);
+//			addEast(5, EType.wolf);
+			break;
+			
+		case 2:
+			addSouth(10, EType.bat);
+			addNorth(1, EType.orc);
+			addEast(1, EType.orc);
+			addWest(1, EType.orc);
+			break;
+			
+		case 3:
+			addWest(5, EType.orc);
+			addEast(5, EType.orc);
+			addSouth(3, EType.demon);
+			break;
+			
+		case 4:
+			addWest(5, EType.orc);
+			addEast(3, EType.demon);
+			addNorth(5, EType.bat);
+			addSouth(5, EType.bat);
+			break;
+			
+		case 5:
+			addWest(10, EType.bat);
+			addEast(10, EType.bat);
+			addNorth(5, EType.wolf);
+			addSouth(5, EType.wolf);
+			break;
+			
+		case 6:
+			addWest(5, EType.wolf);
+			addEast(5, EType.wolf);
+			addNorth(5, EType.demon);
+			break;
+			
+		case 7:
+			addWest(2, EType.eyeball);
+			addNorth(2, EType.eyeball);
+			addEast(5, EType.bat);
+			addSouth(5, EType.bat);
+			break;
+			
+		case 8:
+			addSouth(5, EType.wolf);
+			addEast(3, EType.eyeball);
+			addWest(3, EType.eyeball);
+			addNorth(5, EType.bat);
+			break;
+			
+		case 9:
+			addNorth(5, EType.orc);
+			addSouth(5, EType.demon);
+			addWest(5, EType.skull);
+			addEast(5, EType.skull);
+			break;
+			
+		case 10:
+			addSouth(1, EType.lavagolem);
+			addNorth(3, EType.wolf);
+			addEast(3, EType.demon);
+			addWest(3, EType.orc);
+			break;
+			
+		case 11:
+			addSouth(3, EType.lavagolem);
+			addNorth(10, EType.skull);
+			addWest(5, EType.wolf);
+			addEast(5, EType.eyeball);
+			break;
+			
+		case 12:
+			addNorth(5, EType.eyeball);
+			addSouth(5, EType.eyeball);
+			addWest(5, EType.eyeball);
+			break;
+			
+		case 13:
+			addNorth(15, EType.bat);
+			addSouth(15, EType.skull);
+			addWest(5, EType.lavagolem);
+			addEast(10, EType.wolf);
+			break;
+			
+		case 14:
+			addNorth(5, EType.lavagolem);
+			addSouth(5, EType.lavagolem);
+			addWest(10, EType.skull);
+			addEast(10, EType.skull);					
+			break;
+			
+		case 15:
+			EType e = EType.lupa;
+			addNorth(1, e);
+			addWest(10, EType.wolf);
+			addEast(10, EType.wolf);
+			addSouth(3, EType.lavagolem);
+			break;
+		}
+		
+		gameState = GameState.battle;
+	}
+
 	public static void addExpDrop(Point pos, int value) throws SlickException{
 		objects.get(GOType.Pickable).add(new Pickable(pos, value, PickableType.exp));
 	}

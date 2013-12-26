@@ -5,6 +5,7 @@ import game.Play;
 import game.Sounds;
 import game.entities.Bullet;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Ellipse;
@@ -32,6 +33,9 @@ public class Eyeball extends EMoveToPlayer{
 		initAttackAnimations("eyeball");
 		
 		exp = 18;
+		
+		dieColors[0] = new Color(180, 0, 0);
+		dieColors[1] = new Color(250, 0, 0);
 	}
 	
 	@Override
@@ -67,7 +71,7 @@ public class Eyeball extends EMoveToPlayer{
 	public void attack() throws SlickException{
 		if(!isStunned && !Play.p.invisible){
 			Bullet b = new Bullet(pos, 1, 1, GOType.Enemy);
-			b.damage = 3;
+			b.damage = 5;
 			b.speed += 1;
 			b.range = 100;
 			Play.addBullet(b);

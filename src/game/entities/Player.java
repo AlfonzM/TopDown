@@ -1,5 +1,8 @@
 package game.entities;
 
+import java.io.File;
+import java.io.IOException;
+
 import game.Dir;
 import game.Fonts;
 import game.GOType;
@@ -24,6 +27,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
 
 /*
  * Unit with input
@@ -63,6 +68,7 @@ public class Player extends Human{
 		speed = defaultSpeed;
 		
 		// health
+		invulnerable = false;
 		maxHealth = 100;
 		health = maxHealth;
 		
@@ -86,6 +92,9 @@ public class Player extends Human{
 		}
 		dashStartPoint = 0;
 		dashRange = 100;
+		
+		dieColors[0] = new Color(255, 255, 150);
+		dieColors[1] = new Color(255, 255, 200);
 	}
 	
 	@Override
@@ -132,7 +141,14 @@ public class Player extends Human{
 			g.drawImage(i, renderX, renderY);
 		}
 		else if(animation != null){
-			g.drawAnimation(animation, renderX, renderY);
+			if(isHit){
+				Image i = animation.getCurrentFrame();
+				i.drawFlash(renderX, renderY);
+				isHit = false;
+			}
+			else{
+				g.drawAnimation(animation, renderX, renderY);
+			}
 //			if(animation == aAtkLeft){
 //				g.drawAnimation(animation, renderX, renderY);
 //			}
@@ -322,6 +338,8 @@ public class Player extends Human{
 			skills[i].useSkill();
 			canUseSkill[i] = false;
 			
+			new GameText(skills[i].name, pos);
+			
 			switch(skills[i].name){
 			case "HASTE":
 				HUD.addTimer(Haste.duration, i);
@@ -428,8 +446,30 @@ public class Player extends Human{
 	@Override
 	public void takeDamage(int dmg){
 		if(invulnerable != true){
-			super.takeDamage(dmg);
+			// super.takeDamage
+			health -= dmg;
+			
+			if(health <= 0){
+				try {
+					die();
+				} catch (SlickException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			new GameText("-" + dmg, new Point(pos.getX(), pos.getY() - 30), Color.red);
+			
+			if(isAlive){
+				ConfigurableEmitter e = Play.emitterSpark.duplicate();
+				e.addColorPoint(0, dieColors[0]);
+				e.addColorPoint(1, dieColors[1]);
+				e.setPosition(pos.getX() + 20, pos.getY() - 10);
+				Play.pSystem.addEmitter(e);
+				
+				isHit = true;
+				
+				Sounds.hit.play();
+			}
 		}
 	}
 	

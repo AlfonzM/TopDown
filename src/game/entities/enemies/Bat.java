@@ -1,5 +1,6 @@
 package game.entities.enemies;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 
@@ -17,5 +18,8 @@ public class Bat extends EMoveRandom{
 		initAttackAnimations("bat");
 		
 		exp = 8;
+		
+		dieColors[0] = new Color(80, 80, 80);
+		dieColors[1] = new Color(0, 0, 0);
 	}
 }

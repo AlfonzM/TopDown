@@ -26,7 +26,7 @@ public class Bullet extends Unit{
 	int bWidth = 5,
 	    bHeight = 5;
 	
-	Image sprite;
+	public Image sprite;
 	
 	public Bullet(Point p, float vx, float vy, GOType userType) throws SlickException{
 		super(p);
@@ -35,27 +35,37 @@ public class Bullet extends Unit{
 		bounds.setHeight(bHeight);
 		bounds.setWidth(bWidth);
 		
+		float xtarget = 0, ytarget = 0;
+		
 		if(userType == GOType.Player){
 			targets = Play.getEnemies();
 			move.x = vx;
 			move.y = vy;
 			
-			sprite = new Image("res/wizard/normalatk.png").getSubImage((int) ++vx *Game.TS, (int) ++vy * Game.TS, Game.TS, Game.TS);
+//			sprite = new Image("res/wizard/normalatk.png").getSubImage((int) ++vx *Game.TS, (int) ++vy * Game.TS, Game.TS, Game.TS);
+			sprite = new Image("res/wizard/normalatk.png").getSubImage(1 * Game.TS, 0, Game.TS, Game.TS);
+			
+			xtarget = p.getX() + move.x * 5;
+			ytarget = p.getY() + move.y * 5;
 		}
 		else if(userType == GOType.Enemy){
 			targets = Play.objects.get(GOType.Player);
 			sprite = new Image("res/wizard/normalatk2.png").getSubImage(1 * Game.TS, 0, Game.TS, Game.TS);
-			recalculateVector(Play.p.pos.getX(), Play.p.pos.getY());
 			
-			float xDistance = (float) Play.p.pos.getX() - p.getX();
-			float yDistance = (float) Play.p.pos.getY() - p.getY();
-			
-			float angleToTurn = (float) Math.toDegrees(Math.atan2(-yDistance, -xDistance));
-			
-			sprite.rotate(angleToTurn - 90);
+			xtarget = Play.p.pos.getX() + Play.p.getBounds().getWidth()/2;
+			ytarget = Play.p.pos.getY();
 		}
 		
 		health = 1;
+		
+		recalculateVector(xtarget, ytarget);
+		
+		float xDistance = (float) xtarget - p.getX();
+		float yDistance = (float) ytarget - p.getY();
+		
+		float angleToTurn = (float) Math.toDegrees(Math.atan2(-yDistance, -xDistance));
+		
+		sprite.rotate(angleToTurn - 90);
 	}
 	
 	@Override
