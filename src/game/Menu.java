@@ -42,6 +42,8 @@ public class Menu extends BasicGameState{
 		if(disp){
 			Fonts.font16.drawString(Play.centerText("PRESS ENTER TO START", Fonts.font16), 350, "PRESS ENTER TO START");
 		}
+		
+		Fonts.font8.drawString(Play.centerText("VERSION 1.1", Fonts.font8), Game.GHEIGHT - 20, "VERSION 1.1");
 	}
 
 	@Override

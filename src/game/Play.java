@@ -15,8 +15,9 @@ import game.entities.enemies.Lupa;
 import game.entities.enemies.Orc;
 import game.entities.enemies.Skull;
 import game.entities.enemies.Wolf;
+import game.entities.skills.DurationSkill;
+import game.entities.skills.WindWalk;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +37,6 @@ import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
 
 public class Play extends BasicGameState{
 	// Constant Values
@@ -60,7 +60,7 @@ public class Play extends BasicGameState{
 	
 	// Particle effects
 	public static ParticleSystem pSystem;
-	public static ConfigurableEmitter emitterUnit, emitterSpark;
+	public static ConfigurableEmitter emitterUnit, emitterSpark, emitterPick;
 	
 	// HUD
 	static Image healthGui;
@@ -116,11 +116,10 @@ public class Play extends BasicGameState{
 		// Prepare particle system
 		try{
 			Image image = new Image("res/particles/square.png");
-			File xml = new File("res/particles/unitdeath.xml");
-			File xml2 = new File("res/particles/spark.xml");
 			
-			emitterUnit = ParticleIO.loadEmitter(xml);
-			emitterSpark = ParticleIO.loadEmitter(xml2);
+			emitterUnit = ParticleIO.loadEmitter("res/particles/unitdeath.xml");
+			emitterSpark = ParticleIO.loadEmitter("res/particles/spark.xml");
+			emitterPick = ParticleIO.loadEmitter("res/particles/pickable.xml");
 			
 			pSystem = new ParticleSystem(image, 1500);
 			pSystem.setRemoveCompletedEmitters(true);
@@ -136,6 +135,22 @@ public class Play extends BasicGameState{
 		enemiesKilled = 0;
 		totalGold = 0;
 		totalExp = 0;
+		
+		emitterUnit.addColorPoint(0, Color.white);
+		emitterUnit.addColorPoint(1, Color.white);
+		
+		emitterSpark.addColorPoint(0, Color.white);
+		emitterSpark.addColorPoint(1, Color.white);
+		
+		emitterUnit.setPosition(-50, -50);
+		emitterSpark.setPosition(-50, -50);
+		
+		ConfigurableEmitter test = emitterUnit.duplicate();
+		test.addColorPoint(0,  Color.white);
+		test.setPosition(-50, -50);
+		pSystem.addEmitter(test);
+		pSystem.addEmitter(emitterSpark);
+		new Resources();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -361,9 +376,9 @@ public class Play extends BasicGameState{
 		switch(wave){
 		case 1:
 //			tutorial=false;
-			addNorth(1, EType.bat);
-			addWest(5, EType.bat);
-			addEast(5, EType.bat);
+//			addNorth(5, EType.bat);
+//			addWest(5, EType.bat);
+//			addEast(5, EType.bat);
 //			addNorth(5, EType.skull);
 //			addWest(1, EType.lavagolem);
 //			addWest(3, EType.eyeball);
@@ -462,12 +477,20 @@ public class Play extends BasicGameState{
 			break;
 			
 		case 15:
-			EType e = EType.lupa;
-			addNorth(1, e);
+			addNorth(1, EType.lupa);
 			addWest(10, EType.wolf);
-			addEast(10, EType.wolf);
+			addEast(10, EType.eyeball);
 			addSouth(3, EType.lavagolem);
 			break;
+		}
+		
+		// stop all duration skills
+		for(int i = 0 ; i < Play.p.skills.length; i++){
+			if(Play.p.skills[i].getClass().getSuperclass() == WindWalk.class.getSuperclass()){
+				DurationSkill ds = (DurationSkill) Play.p.skills[i];
+				ds.end();
+				HUD.timer[i] = false;
+			}
 		}
 		
 		gameState = GameState.battle;

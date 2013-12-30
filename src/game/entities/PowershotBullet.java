@@ -1,7 +1,6 @@
 package game.entities;
 
 import game.GOType;
-import game.Game;
 import game.Play;
 import game.entities.enemies.Enemy;
 

@@ -7,18 +7,18 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 
-public class WindWalk extends Skill{
+public class WindWalk extends DurationSkill{
 	
 	public static int duration = 7000;
-	boolean on;
 	
 	public WindWalk() throws SlickException {
-		super();
+		super(duration);
 		name = "SHADOW WALK";
 		desc = "Grants invisibility and increased\nmove speed for 7 seconds.";
 		cost = 150;
 		
 		on = false;
+		System.out.println(this.getClass().getSuperclass());
 	}
 
 	@Override
@@ -35,19 +35,19 @@ public class WindWalk extends Skill{
 
 	@Override
 	public void update(int delta) {
-		if(on){
-			duration -= delta;
-			
-			if(duration < 0){
-				on = false;
-				Play.p.invulnerable = false;
-				Play.p.invisible = false;
-				Play.p.speed = Play.p.defaultSpeed;
-			}			
-		}
+		super.update(delta);
 	}
 
 	@Override
 	public void render(Graphics g) {
+	}
+	
+	@Override
+	public void end(){
+		super.end();
+		
+		Play.p.invulnerable = false;
+		Play.p.invisible = false;
+		Play.p.speed = Play.p.defaultSpeed;
 	}
 }

@@ -32,7 +32,7 @@ public class AoEStun extends Skill{
 		ScreenShake.shake();
 		for(GameObject go : Play.getEnemies()){
 			Enemy e = (Enemy) go;
-			if(getBounds().contains(e.pos)){
+			if(getBounds().contains(e.pos)){				
 				e.stun(duration);
 			}
 		}

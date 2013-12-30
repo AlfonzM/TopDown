@@ -18,12 +18,12 @@ import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class HUD {
-	static Image offSkill, onSkill;
-	static Image hp[];
-	static Image exp[];
-	static Image levelBox;
+	public static Image offSkill, onSkill;
+	public static Image hp[];
+	public static Image exp[];
+	public static Image levelBox;
 	
-	static boolean[] timer;
+	public static boolean[] timer;
 	static int[] dur;
 	
 	// game over screen
@@ -58,6 +58,8 @@ public class HUD {
 		dur = new int[4];
 		
 		alpha = 0;
+		c1 = 0;
+		cNum = 0;
 		cNumTime = 500;
 		c1Time = 1000;
 		
@@ -105,12 +107,17 @@ public class HUD {
 		g.drawImage(levelBox, 10, 10);
 		
 		if(Play.gameState == GameState.battle && dispWave){
-			String t = "WAVE: " + Play.wave;
+			String t = "";
+			if(Play.wave == 15){
+				t = "BOSS: LUPA";
+			}
+			else{
+				t = "WAVE " + Play.wave;
+			}
 			Fonts.font24.drawString(Play.centerText(t, Fonts.font24), 200, t, new Color(255, 255, 255, waveAlpha));
 		}
 		
 		if(!Play.win && Play.p.isAlive){
-			
 			g.drawString("Wave: " + Play.wave, 10, 50);
 			g.setColor(Color.white);
 			if(Play.gameState == GameState.battle && Play.getEnemies().size() <= 5){
@@ -263,7 +270,7 @@ public class HUD {
 				t = "WAVES SURVIVED";
 				Fonts.font16.drawString(x4 + Game.GWIDTH/2 - Fonts.font16.getWidth(t) - 10, y, t);
 				
-				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave - 1);
+				String s = NumberFormat.getNumberInstance(Locale.US).format(Play.wave);
 				t = s;
 				Fonts.font24.drawString(x4 + Game.GWIDTH/2 + 10, y-4, t, MyColors.green);
 				

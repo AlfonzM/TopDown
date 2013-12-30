@@ -1,8 +1,5 @@
 package game.entities;
 
-import java.io.File;
-import java.io.IOException;
-
 import game.Play;
 import game.Sounds;
 
@@ -13,7 +10,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.particles.ConfigurableEmitter;
-import org.newdawn.slick.particles.ParticleIO;
 
 /*
  * Components: unit, attack, attack animations
@@ -31,14 +27,15 @@ public class Human extends Unit{
 //	public Animation aAtkUp, aAtkDown, aAtkLeft, aAtkRight;
 	
 	// 4 directions animation
-	Animation aLeft, aRight;
-//	Animation aUp, aDown;
+	protected Animation aLeft;
+	protected Animation aRight;
+//	protected Animation aUp, aDown;
 	
 	public float defaultSpeed;
 	public boolean isHit;
 	
 	// for particle
-	protected Color[] dieColors;
+	public Color[] dieColors;
 	Color[] sparkColors;
 	
 	public Human(Point p) throws SlickException{
@@ -180,12 +177,13 @@ public class Human extends Unit{
 	public void takeDamage(int i){
 		super.takeDamage(i);
 		
-		if(isAlive){			
+		if(isAlive){
 			ConfigurableEmitter e = Play.emitterSpark.duplicate();
 			e.addColorPoint(0, dieColors[0]);
 			e.addColorPoint(1, dieColors[1]);
 			e.setPosition(pos.getX() + getBounds().getWidth()/2, pos.getY() + 5);
 			Play.pSystem.addEmitter(e);
+			Sounds.hit.play();
 			
 			isHit = true;
 		}
@@ -202,7 +200,7 @@ public class Human extends Unit{
 		e.setPosition(pos.getX(), pos.getY() + getBounds().getHeight()/2);
 		Play.pSystem.addEmitter(e);
 		
-//		Sounds.die.play();
+		Sounds.die.play();
 	}
 	
 	public void initAttackAnimations(String classType) throws SlickException{

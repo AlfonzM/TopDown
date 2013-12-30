@@ -3,7 +3,6 @@ package game.entities;
 import game.GOType;
 import game.Play;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
@@ -18,8 +17,6 @@ public class Wizard extends Player{
 
 	public Wizard(Input input, Point p) throws SlickException {
 		super(input, p);
-		
-		speed = 3;
 		
 		initMoveAnimations("wizard", 4);
 		initAttackAnimations("wizard");

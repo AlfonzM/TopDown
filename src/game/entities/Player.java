@@ -1,8 +1,5 @@
 package game.entities;
 
-import java.io.File;
-import java.io.IOException;
-
 import game.Dir;
 import game.Fonts;
 import game.GOType;
@@ -28,7 +25,6 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.particles.ConfigurableEmitter;
-import org.newdawn.slick.particles.ParticleIO;
 
 /*
  * Unit with input
@@ -338,7 +334,7 @@ public class Player extends Human{
 			skills[i].useSkill();
 			canUseSkill[i] = false;
 			
-			new GameText(skills[i].name, pos);
+			new GameText(skills[i].name + "!", pos, Fonts.font16);
 			
 			switch(skills[i].name){
 			case "HASTE":

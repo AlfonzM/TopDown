@@ -24,20 +24,23 @@ public class GameText extends GameObject{
 	public GameText(String val, Point p){
 		super(p);
 		value = val;
-		
 		targetY = pos.getY() - 40;
-		
+		Play.gameTexts.add(this);
+	}
+	
+	public GameText(String val, Point p, AngelCodeFont font){
+		super(p);
+		value = val;
+		targetY = pos.getY() - 40;
+		this.font = font;
 		Play.gameTexts.add(this);
 	}
 	
 	public GameText(String val, Point p, Color col){
 		super(p);
 		value = val;
-		
 		targetY = pos.getY() - 40;
-		
 		color = col;
-		
 		Play.gameTexts.add(this);
 	}
 	
@@ -48,6 +51,18 @@ public class GameText extends GameObject{
 		targetY = pos.getY() - range;
 		
 		Play.gameTexts.add(this);
+	}
+	
+	public GameText(String val, Point p, int range, Color col){
+		super(p);
+		value = val;
+		
+		targetY = pos.getY() - range;
+		
+		color = col;
+		
+		Play.gameTexts.add(this);	
+		
 	}
 	
 	public GameText(String val, Point p, int range, Color col, AngelCodeFont font){

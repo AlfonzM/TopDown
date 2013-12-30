@@ -1,9 +1,6 @@
 package game.entities;
 
 import game.GOType;
-import game.Game;
-
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 

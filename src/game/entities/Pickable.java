@@ -1,15 +1,18 @@
 package game.entities;
 
+import game.Fonts;
 import game.MyColors;
 import game.PickableType;
 import game.Play;
 import game.Sounds;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.particles.ConfigurableEmitter;
 
 public class Pickable extends GameObject{	
 	PickableType type;
@@ -19,6 +22,8 @@ public class Pickable extends GameObject{
 	
 	public static float expMod = 1;
 	public static float goldMod = 1;
+	
+	ConfigurableEmitter e;
 	
 	public Pickable(Point p, int value, PickableType type) throws SlickException {
 		super(p);
@@ -32,6 +37,8 @@ public class Pickable extends GameObject{
 			sprite = new Image("res/exp.png");
 			
 		bounds = new Rectangle(0, 0, sprite.getWidth(), sprite.getHeight());
+		
+		e = Play.emitterPick.duplicate();
 	}
 
 	@Override
@@ -52,43 +59,53 @@ public class Pickable extends GameObject{
 
 	public void pickedUp(){
 		isAlive = false;
+		String text = null;
+		Color c = null;
 		
 		switch(type){			
 		case exp:
-			String text;
 			value *= expMod;
+			c = MyColors.cyan;
 			
 			if(expMod > 1)
 				text = "EXP x2\n+" + value;
 			else
 				text = "+" + value;
 
-			new GameText(text, pos, MyColors.cyan);
 			Play.p.addExp(value);
 			Play.totalExp += value;
 			
 			Sounds.exp.play();
+
+			e.addColorPoint(0, new Color(0.5f, 0.8f, 0.8f));
+			e.addColorPoint(0.5f, new Color(0.5f, 1, 1));
 			break;
 			
-		case gold:
-			String text2;
-			
+		case gold:			
 			value *= goldMod;
+			c = MyColors.yellow;
 			
 			if(goldMod > 1)
-				text2 = "GOLD x2\n+" + value;
+				text = "GOLD x2\n+" + value;
 			else
-				text2 = "+" + value;
+				text = "+" + value;
 
-			new GameText(text2, pos, MyColors.yellow);
 			Play.p.goldToAdd += value;
 			Play.totalGold += value;
 			
 			Sounds.coin.play();
+			
+			e.addColorPoint(0, new Color(0.8f, 0.8f, 0));
+			e.addColorPoint(0.2f, Color.yellow);
 			break;
 			
 		default:
 			break;
 		}
+		
+		new GameText(text, new Point(pos.getX() - Fonts.font24.getWidth(text)/2, pos.getY()), c);
+		
+		e.setPosition(pos.getX(), pos.getY());
+		Play.pSystem.addEmitter(e);
 	}
 }

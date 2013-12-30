@@ -2,12 +2,15 @@ package game.entities;
 
 import game.Fonts;
 import game.Game;
+import game.HUD;
 import game.MyColors;
 import game.Play;
 import game.Shop;
 import game.Sounds;
+import game.entities.skills.DurationSkill;
 import game.entities.skills.Skill;
 import game.entities.skills.SkillList;
+import game.entities.skills.WindWalk;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -35,15 +38,12 @@ public class ShopItem{
 		float x = pos.getX();
 		
 		if(x < Game.MWIDTH/2){
-			System.out.println(1);
 			icon = new Image("res/gandalf/wiz1.png");
 		}
 		else if(x > Game.MWIDTH/2){
-			System.out.println(2);
 			icon = new Image("res/gandalf/wiz2.png");
 		}
 		else{
-			System.out.println(3);
 			icon = new Image("res/gandalf/wiz3.png");
 		}
 	}
@@ -82,6 +82,11 @@ public class ShopItem{
 	public void buy(int i, Skill s){
 		String t;
 		if(Play.p.gold >= s.cost){
+			if(Play.p.skills[i].getClass().getSuperclass() == WindWalk.class.getSuperclass()){
+				DurationSkill ds = (DurationSkill) Play.p.skills[i];
+				ds.end();
+				HUD.timer[i] = false;
+			}
 			Play.p.skills[i] = null;
 			Play.p.skills[i] = s;
 			Shop.isOpen = false;

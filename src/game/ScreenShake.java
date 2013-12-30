@@ -41,7 +41,6 @@ public class ScreenShake {
 			screenShake();
 
 			offset -= 0.7f;
-			System.out.println(offset);
 			if(offset <= 0.0f){
 				on = false;
 				

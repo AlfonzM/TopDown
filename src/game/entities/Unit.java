@@ -1,6 +1,5 @@
 package game.entities;
 import game.Dir;
-import game.Sounds;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
@@ -82,8 +81,6 @@ public class Unit extends GameObject{
 				e.printStackTrace();
 			}
 		}
-		
-		Sounds.hit.play();
 	}
 	
 	// update dir
